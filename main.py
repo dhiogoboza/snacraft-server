@@ -31,7 +31,7 @@ app.debug = 'DEBUG' in os.environ
 sockets = Sockets(app)
 
 @sockets.route('/')
-def echo(ws):
+def handle(ws):
     # new client connected
     client = Client(ws)
     client.sendMessage(chr(0) + "," + str(game.getMapStr()))
