@@ -1,5 +1,4 @@
 import os
-import sys
 
 from game import Game
 from net import Client
