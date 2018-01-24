@@ -3,12 +3,10 @@ import time
 
 from threading import Thread
 
-EMPTY = 0
-WALL = 1
-MOB_INCREASE = 3
-
 STATE_EMPTY = 0
 STATE_BUSY = 1
+MOB_MOVE_SPEED = 2
+MOB_INCREASE = 3
 
 class Game(Thread):
 
@@ -33,7 +31,7 @@ class Game(Thread):
         for i in range(0, self.lines):
             line = []
             for j in range(0, self.columns):
-                it = WALL if (i == 0) or (i == lines_1) or (j == 0) or (j == columns_1) else EMPTY
+                it = STATE_BUSY if (i == 0) or (i == lines_1) or (j == 0) or (j == columns_1) else STATE_EMPTY
                 line.append({
                         "i": i,
                         "j": j,
@@ -161,7 +159,7 @@ class Game(Thread):
                 snake["can_move"] = False
 
     def processMob(self, snake, pixel, i, j):
-        pixel["mob"] = EMPTY
+        pixel["mob"] = STATE_EMPTY
 
         key = self.getKey(i, j)
         power_up = self.power_ups[key]
