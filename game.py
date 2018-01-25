@@ -1,7 +1,10 @@
 import random
 import time
 
+from snake import Snake
 from threading import Thread
+
+SNAKE_INITIAL_SIZE = 5
 
 STATE_EMPTY = 0
 STATE_BUSY = 1
@@ -9,7 +12,7 @@ MOB_MOVE_SPEED = 2
 MOB_INCREASE = 3
 
 class Game(Thread):
-
+    
     def __init__(self, lines, columns, sleep_time):
         Thread.__init__(self)
 
@@ -33,8 +36,6 @@ class Game(Thread):
             for j in range(0, self.columns):
                 it = STATE_BUSY if (i == 0) or (i == lines_1) or (j == 0) or (j == columns_1) else STATE_EMPTY
                 line.append({
-                        "i": i,
-                        "j": j,
                         "it": it,
                         "state": it,
                         "mob": 0
@@ -42,9 +43,10 @@ class Game(Thread):
             self.matrix.append(line)
 
         minor = int((self.lines if self.lines < self.columns else self.columns) * 0.8)
-
+        t = ""
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_INCREASE)
+            
 
     def getKey(self, i, j):
         return i * self.columns + j
@@ -87,40 +89,20 @@ class Game(Thread):
         return to_return
 
     def createSnake(self, address):
-        snake = {}
-        snake["pixels"] = []
-        snake["live"] = True
-        snake["can_move"] = True
-        snake["dj"] = 0
-        snake["di"] = -1
-
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
-
-        for c in range(i, i + 5):
-            snake["pixels"].append({
-                    "i": c,
-                    "j": j,
-                    "c": 2
-                })
-
-            self.matrix[c][j]["state"] = STATE_BUSY
-
-        self.snakes[address] = snake
+        
+        self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix)
 
     def removeSnake(self, address):
         snake = self.snakes[address]
-        for i in range(0, len(snake["pixels"])):
-            pixel = snake["pixels"][i]
-            self.matrix[pixel["i"]][pixel["j"]]["state"] = STATE_EMPTY
-
+        snake.clear(self.matrix)
         self.snakes.pop(address)
 
     def getSnakes(self):
         snakes = ""
         for k, snake in self.snakes.items():
-            for pixel in snake["pixels"]:
-                snakes = snakes + chr(pixel["i"]) + chr(pixel["j"]) + chr(pixel["c"])
+            snakes = snakes + snake.getPixelsStr()
 
         return snakes
 
@@ -132,31 +114,7 @@ class Game(Thread):
         return power_ups
 
     def moveSnake(self, address, key):
-        snake = self.snakes[address]
-
-        if not snake["live"] or not snake["can_move"]:
-            return
-
-        if key == "0":
-            if (snake["di"] == 0):
-                snake["dj"] = 0
-                snake["di"] = -1
-                snake["can_move"] = False
-        elif key == "1":
-            if (snake["di"] == 0):
-                snake["dj"] = 0
-                snake["di"] = 1
-                snake["can_move"] = False
-        elif key == "2":
-            if (snake["dj"] == 0):
-                snake["dj"] = -1
-                snake["di"] = 0
-                snake["can_move"] = False
-        elif key == "3":
-            if (snake["dj"] == 0):
-                snake["dj"] = 1
-                snake["di"] = 0
-                snake["can_move"] = False
+        self.snakes[address].move(key)
 
     def processMob(self, snake, pixel, i, j):
         pixel["mob"] = STATE_EMPTY
@@ -165,8 +123,7 @@ class Game(Thread):
         power_up = self.power_ups[key]
 
         if power_up["type"] == MOB_INCREASE:
-            pixels = snake["pixels"]
-            pixels.append(pixels[len(pixels) - 1].copy())
+            snake.increaseSize()
 
         self.power_ups.pop(key)
         self.generateRandomPowerUp(power_up["type"])
@@ -191,24 +148,18 @@ class Game(Thread):
 
         while self.running:
             for k, snake in self.snakes.items():
-                if not snake["live"]:
+                if not snake.live:
                     continue
 
-                head = snake["pixels"][0]
+                head = snake.pixels[0]
 
-                new_i = head["i"] + snake["di"]
-                new_j = head["j"] + snake["dj"]
+                new_i = head["i"] + snake.di
+                new_j = head["j"] + snake.dj
 
                 pixel = self.matrix[new_i][new_j]
 
                 if (pixel["state"] == STATE_BUSY):
-
-                    snake["live"] = False
-
-                    for i in range(0, self.lines):
-                        line = ""
-                        for j in range(0, self.columns):
-                            line = line + ("0 " if self.matrix[i][j]["state"] == 1 else "  ")
+                    snake.kill()
 
                     continue
 
@@ -220,14 +171,10 @@ class Game(Thread):
 
                 pixel["state"] = STATE_BUSY
 
-                for i in range(0, len(snake["pixels"])):
-                    pixel = snake["pixels"][i]
-
-                    pixel["i"], previous_i = previous_i, pixel["i"]
-                    pixel["j"], previous_j = previous_j, pixel["j"]
+                previous_i, previous_j = snake.walk(previous_i, previous_j)
 
                 self.matrix[previous_i][previous_j]["state"] = STATE_EMPTY
-                snake["can_move"] = True
+                snake.can_move = True
 
                 # snakes iteration end
 
@@ -235,7 +182,7 @@ class Game(Thread):
             message2 = self.getSnakes() + self.getPowerUps()
 
             for client in self.clients:
-                head = self.snakes[client.address]["pixels"][0]
+                head = self.snakes[client.address].pixels[0]
                 client.sendMessage("".join([message0, chr(head["i"]), chr(head["j"]), message2]))
 
             cur_time = time.time()

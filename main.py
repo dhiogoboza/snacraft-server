@@ -7,9 +7,9 @@ from flask import Flask, render_template
 from flask_sockets import Sockets
 
 # game config
-LINES = 64
-COLUMNS = 64
-SLEEP_TIME = 0.200
+LINES = 128
+COLUMNS = 128
+SLEEP_TIME = 0.100
 
 game = None
 
