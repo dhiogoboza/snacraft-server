@@ -17,35 +17,35 @@ class Snake():
                     "c": 2
                 })
             game_matrix[c][j]["state"] = STATE_BUSY
-            
+
     def clear(self, game_matrix):
         for pixel in self.pixels:
             game_matrix[pixel["i"]][pixel["j"]]["state"] = STATE_EMPTY
-    
-    def kill(self, game_matrix):
+
+    def kill(self):
         self.live = False
-         
+
     def getPixelsStr(self):
         pixels_str = ""
         for pixel in self.pixels:
             pixels_str = pixels_str + chr(pixel["i"]) + chr(pixel["j"]) + chr(pixel["c"])
-            
+
         return pixels_str
-        
+
     def increaseSize(self):
         self.pixels.insert(0, self.pixels[0].copy())
-    
+
     def walk(self, previous_i, previous_j):
         for pixel in self.pixels:
             pixel["i"], previous_i = previous_i, pixel["i"]
             pixel["j"], previous_j = previous_j, pixel["j"]
-            
+
         return previous_i, previous_j
-    
+
     def move(self, key):
         if not self.live or not self.can_move:
             return
-        
+
         # KEY_UP
         if key == "0":
             if (self.di == 0):
@@ -59,30 +59,17 @@ class Snake():
                 self.dj = 0
                 self.di = 1
                 self.can_move = False
-        
+
         # KEY_LEFT
         elif key == "2":
             if (self.dj == 0):
                 self.dj = -1
                 self.di = 0
                 self.can_move = False
-        
+
         # KEY_RIGHT
         elif key == "3":
             if (self.dj == 0):
                 self.dj = 1
                 self.di = 0
                 self.can_move = False
-                
-                
-
-
-
-
-
-
-
-
-
-
-
