@@ -1,66 +1,48 @@
-import sys
-import signal
+import os
 
 from game import Game
-from net import Client, Connector
-from SimpleWebSocketServer import SimpleWebSocketServer
+from net import Client
 
-LINES = 24
-COLUMNS = 24
-PORT = 8888
+from flask import Flask, render_template
+from flask_sockets import Sockets
+
+# game config
+LINES = 64
+COLUMNS = 64
 SLEEP_TIME = 0.200
 
 game = None
-server = None
 
-def signal_handler(signal, frame):
-    global game
-    global server
-    
-    print('\rShutting down')
-    
-    if not game == None:
-        print('Closing game')
-        
-        game.close()
+# init game
+columns = COLUMNS
+lines = LINES
+sleep_time = SLEEP_TIME
 
-    sys.exit(0)
+game = Game(lines, columns, sleep_time)
+game.init()
+game.start()
 
-def main():
-    global game
-    global server
-    
-    columns = COLUMNS
-    lines = LINES
-    port = PORT
-    sleep_time = SLEEP_TIME
-    
-    if len(sys.argv) > 1:
-        for i in range(1, len(sys.argv)):
-            if sys.argv[i] == '-p':
-                port = int(sys.argv[i + 1])
-            elif sys.argv[i] == '-s':
-                split = sys.argv[i + 1].split('x')
-                
-                columns = int(split[0])
-                lines = int(split[1])
-            elif sys.argv[i] == '-t':
-                sleep_time = float(sys.argv[i + 1])
-                
-    game = Game(lines, columns, sleep_time)
-    game.init()
-    
-    listener = Connector(game)
-    Client.listener = listener
-    
-    server = SimpleWebSocketServer('', port, Client)
-    
-    signal.signal(signal.SIGINT, signal_handler)
-    
-    game.start()
-    server.serveforever()
+# init app
+app = Flask(__name__)
+app.debug = 'DEBUG' in os.environ
 
-if __name__ == "__main__":
-    main()
+# init websocket
+sockets = Sockets(app)
 
+@sockets.route('/')
+def handle(ws):
+    # new client connected
+    client = Client(ws)
+    client.sendMessage(chr(0) + "," + str(game.getMapStr()))
 
+    game.addClient(client)
+
+    while not ws.closed:
+        # handle incoming messages
+        client.data = ws.receive()
+
+        if client.data and client.data[0] == '1':
+            game.moveSnake(client.address, client.data[2])
+
+    # terminate connection
+    game.removeClient(client)
