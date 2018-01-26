@@ -183,11 +183,19 @@ class Game(Thread):
 
             for client in self.clients:
                 snake = self.snakes[client.address]
+
+                # mobs
                 head = snake.pixels[0]
                 client.sendMessage("".join([message0, chr(head["i"]), chr(head["j"]), message2]))
+
+                # growth
                 if snake.grew:
                     snake.grew = False
                     client.sendMessage("".join([chr(3), str(snake.size)]))
+
+                # death
+                if not snake.live:
+                    client.sendMessage("".join([chr(4)]))
 
             cur_time = time.time()
             elapsed_time = cur_time - previous_time
