@@ -12,7 +12,7 @@ MOB_MOVE_SPEED = 2
 MOB_INCREASE = 3
 
 class Game(Thread):
-    
+
     def __init__(self, lines, columns, sleep_time):
         Thread.__init__(self)
 
@@ -46,7 +46,7 @@ class Game(Thread):
         t = ""
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_INCREASE)
-            
+
 
     def getKey(self, i, j):
         return i * self.columns + j
@@ -91,7 +91,7 @@ class Game(Thread):
     def createSnake(self, address):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
-        
+
         self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix)
 
     def removeSnake(self, address):
@@ -182,8 +182,12 @@ class Game(Thread):
             message2 = self.getSnakes() + self.getPowerUps()
 
             for client in self.clients:
-                head = self.snakes[client.address].pixels[0]
+                snake = self.snakes[client.address]
+                head = snake.pixels[0]
                 client.sendMessage("".join([message0, chr(head["i"]), chr(head["j"]), message2]))
+                if snake.grew:
+                    snake.grew = False
+                    client.sendMessage("".join([chr(3), str(snake.size)]))
 
             cur_time = time.time()
             elapsed_time = cur_time - previous_time

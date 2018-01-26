@@ -9,6 +9,8 @@ class Snake():
         self.can_move = True
         self.dj = 0
         self.di = -1
+        self.size = size
+        self.grew = True # initially grew from nothing to something ;)
 
         for c in range(i, i + size):
             self.pixels.append({
@@ -34,6 +36,8 @@ class Snake():
 
     def increaseSize(self):
         self.pixels.insert(0, self.pixels[0].copy())
+        self.size = self.size + 1
+        self.grew = True
 
     def walk(self, previous_i, previous_j):
         for pixel in self.pixels:
