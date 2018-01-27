@@ -7,6 +7,7 @@ class Client():
         self.ws = ws
         self.address = self.ws.environ['HTTP_SEC_WEBSOCKET_KEY']
         self.data = None
+        self.nickname = ''
 
     def sendMessage(self, message):
         if not self.ws.closed:
