@@ -35,6 +35,9 @@ def handle(ws):
     client = Client(ws)
     client.sendMessage(chr(0) + "," + str(game.getMapStr()))
 
+    # wait for snake's nickname
+    client.nickname = ws.receive()
+
     game.addClient(client)
 
     while not ws.closed:

@@ -3,7 +3,8 @@ STATE_BUSY = 1
 
 class Snake():
 
-    def __init__(self, size, i, j, game_matrix):
+    def __init__(self, size, i, j, game_matrix, nickname):
+        self.nickname = nickname
         self.pixels = []
         self.live = True
         self.can_move = True
