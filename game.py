@@ -72,7 +72,7 @@ class Game(Thread):
 
     def addClient(self, client):
         self.clients.append(client)
-        self.createSnake(client.address)
+        self.createSnake(client.address, client.nickname)
 
     def removeClient(self, client):
         if (client in self.clients):
@@ -88,11 +88,11 @@ class Game(Thread):
 
         return to_return
 
-    def createSnake(self, address):
+    def createSnake(self, address, nickname):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
 
-        self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix)
+        self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
 
     def removeSnake(self, address):
         snake = self.snakes[address]
