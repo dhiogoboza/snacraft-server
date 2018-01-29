@@ -94,7 +94,7 @@ class Game(Thread):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
 
-        for k,snake in self.snakes:
+        for k, snake in self.snakes.items():
             snake.rankingChanged = True
 
         self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
@@ -106,7 +106,7 @@ class Game(Thread):
         self.snakes.pop(address)
         self.ranking.remove(address)
 
-        for k,snake in self.snakes:
+        for k, snake in self.snakes.items():
             snake.rankingChanged = True
 
     def getSnakes(self):
