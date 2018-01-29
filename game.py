@@ -24,6 +24,7 @@ class Game(Thread):
         self.matrix = []
         self.snakes = {}
         self.power_ups = {}
+        self.ranking = []
 
     def init(self):
         self.clients = []
@@ -93,11 +94,13 @@ class Game(Thread):
         j = int(self.columns / 2) + len(self.snakes)
 
         self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
+        self.ranking.append(address)
 
     def removeSnake(self, address):
         snake = self.snakes[address]
         snake.clear(self.matrix)
         self.snakes.pop(address)
+        self.ranking.remove(address)
 
     def getSnakes(self):
         snakes = ""
@@ -128,6 +131,40 @@ class Game(Thread):
         self.power_ups.pop(key)
         self.generateRandomPowerUp(power_up["type"])
 
+    def recalculateRanking(self):
+        self.ranking = self.merge_sort(self.ranking)
+
+    def merge(self, left, right):
+        result = []
+        left_idx, right_idx = 0, 0
+        while left_idx < len(left) and right_idx < len(right):
+            if self.snakes[left[left_idx]].size > self.snakes[right[right_idx]].size:
+                result.append(left[left_idx])
+                left_idx += 1
+            else:
+                result.append(right[right_idx])
+                right_idx += 1
+
+        if left:
+            result.extend(left[left_idx:])
+        if right:
+            result.extend(right[right_idx:])
+
+        return result
+
+    def merge_sort(self, array):
+        if len(array) <= 1:
+            return array
+
+        middle = len(array) // 2
+        left = array[:middle]
+        right = array[middle:]
+
+        left = self.merge_sort(left)
+        right = self.merge_sort(right)
+
+        return list(self.merge(left, right))
+
     def close(self):
         self.running = False
 
@@ -147,6 +184,7 @@ class Game(Thread):
         cur_time = 0
 
         while self.running:
+            recalculateRanking = False
             for k, snake in self.snakes.items():
                 if not snake.live:
                     continue
@@ -166,6 +204,9 @@ class Game(Thread):
                 if not (pixel["mob"] == 0):
                     self.processMob(snake, pixel, new_i, new_j)
 
+                    if snake.grew:
+                        recalculateRanking = True
+
                 previous_i = new_i
                 previous_j = new_j
 
@@ -178,15 +219,35 @@ class Game(Thread):
 
                 # snakes iteration end
 
+            if recalculateRanking:
+                self.recalculateRanking()
+
             message0 = chr(2)
             message2 = self.getSnakes() + self.getPowerUps()
+
+            rankingLength = str(len(self.ranking))
+
+            leaderBoard = ""
+            for address in self.ranking[:10]:
+                leaderBoard = leaderBoard + str(self.snakes[address].nickname) + ','
+            leaderBoard = leaderBoard[:(len(leaderBoard) - 1)]
 
             for client in self.clients:
                 snake = self.snakes[client.address]
 
                 # mobs
                 head = snake.pixels[0]
-                client.sendMessage("".join([message0, chr(head["i"]), chr(head["j"]), message2]))
+                client.sendMessage("".join([message0, chr(head["i"]),
+                        chr(head["j"]), message2]))
+
+                # ranking
+                client.sendMessage("".join([chr(5),
+                        str(self.ranking.index(client.address) + 1),
+                        str('/'),
+                        rankingLength]))
+
+                # leader board
+                client.sendMessage("".join([chr(6), leaderBoard]))
 
                 # growth
                 if snake.grew:
