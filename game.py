@@ -25,6 +25,7 @@ class Game(Thread):
         self.snakes = {}
         self.power_ups = {}
         self.ranking = []
+        self.leaderBoard = ""
 
     def init(self):
         self.clients = []
@@ -93,6 +94,9 @@ class Game(Thread):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
 
+        for k,snake in self.snakes:
+            snake.rankingChanged = True
+
         self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
         self.ranking.append(address)
 
@@ -101,6 +105,9 @@ class Game(Thread):
         snake.clear(self.matrix)
         self.snakes.pop(address)
         self.ranking.remove(address)
+
+        for k,snake in self.snakes:
+            snake.rankingChanged = True
 
     def getSnakes(self):
         snakes = ""
@@ -133,6 +140,11 @@ class Game(Thread):
 
     def recalculateRanking(self):
         self.ranking = self.merge_sort(self.ranking)
+
+        ranking = 1
+        for address in self.ranking:
+            self.snakes[address].setRanking(ranking)
+            ranking += 1
 
     def merge(self, left, right):
         result = []
@@ -204,9 +216,6 @@ class Game(Thread):
                 if not (pixel["mob"] == 0):
                     self.processMob(snake, pixel, new_i, new_j)
 
-                    if snake.grew:
-                        recalculateRanking = True
-
                 previous_i = new_i
                 previous_j = new_j
 
@@ -216,6 +225,9 @@ class Game(Thread):
 
                 self.matrix[previous_i][previous_j]["state"] = STATE_EMPTY
                 snake.can_move = True
+
+                if snake.grew:
+                    recalculateRanking = True
 
                 # snakes iteration end
 
@@ -232,6 +244,12 @@ class Game(Thread):
                 leaderBoard = leaderBoard + str(self.snakes[address].nickname) + ','
             leaderBoard = leaderBoard[:(len(leaderBoard) - 1)]
 
+            leaderBoardChanged = False
+
+            if self.leaderBoard != leaderBoard:
+                self.leaderBoard = leaderBoard
+                leaderBoardChanged = True
+
             for client in self.clients:
                 snake = self.snakes[client.address]
 
@@ -241,13 +259,17 @@ class Game(Thread):
                         chr(head["j"]), message2]))
 
                 # ranking
-                client.sendMessage("".join([chr(5),
-                        str(self.ranking.index(client.address) + 1),
-                        str('/'),
-                        rankingLength]))
+                if snake.rankingChanged:
+                    snake.rankingChanged = False
+                    client.sendMessage("".join([chr(5),
+                            str(snake.ranking),
+                            str('/'),
+                            rankingLength]))
 
                 # leader board
-                client.sendMessage("".join([chr(6), leaderBoard]))
+                if leaderBoardChanged or not snake.receivedLeaderBoard:
+                    snake.receivedLeaderBoard = True
+                    client.sendMessage("".join([chr(6), leaderBoard]))
 
                 # growth
                 if snake.grew:
