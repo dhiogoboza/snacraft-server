@@ -24,6 +24,8 @@ class Game(Thread):
         self.matrix = []
         self.snakes = {}
         self.power_ups = {}
+        self.ranking = []
+        self.leaderBoard = ""
 
     def init(self):
         self.clients = []
@@ -92,12 +94,20 @@ class Game(Thread):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.snakes)
 
+        for k, snake in self.snakes.items():
+            snake.rankingChanged = True
+
         self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
+        self.ranking.append(address)
 
     def removeSnake(self, address):
         snake = self.snakes[address]
         snake.clear(self.matrix)
         self.snakes.pop(address)
+        self.ranking.remove(address)
+
+        for k, snake in self.snakes.items():
+            snake.rankingChanged = True
 
     def getSnakes(self):
         snakes = ""
@@ -128,6 +138,14 @@ class Game(Thread):
         self.power_ups.pop(key)
         self.generateRandomPowerUp(power_up["type"])
 
+    def recalculateRanking(self):
+        for ranking in range(1, len(self.ranking)):
+            if self.snakes[self.ranking[ranking]].size > self.snakes[self.ranking[ranking - 1]].size:
+                # swap
+                self.ranking[ranking], self.ranking[ranking - 1] = self.ranking[ranking - 1], self.ranking[ranking]
+                self.snakes[self.ranking[ranking]].rankingChanged = True
+                self.snakes[self.ranking[ranking - 1]].rankingChanged = True
+
     def close(self):
         self.running = False
 
@@ -147,6 +165,7 @@ class Game(Thread):
         cur_time = 0
 
         while self.running:
+            recalculateRanking = False
             for k, snake in self.snakes.items():
                 if not snake.live:
                     continue
@@ -176,17 +195,50 @@ class Game(Thread):
                 self.matrix[previous_i][previous_j]["state"] = STATE_EMPTY
                 snake.can_move = True
 
+                if snake.grew:
+                    recalculateRanking = True
+
                 # snakes iteration end
+
+            if recalculateRanking:
+                self.recalculateRanking()
 
             message0 = chr(2)
             message2 = self.getSnakes() + self.getPowerUps()
+
+            rankingLength = str(len(self.ranking))
+
+            leaderBoard = ""
+            for address in self.ranking[:10]:
+                leaderBoard = leaderBoard + str(self.snakes[address].nickname) + ','
+            leaderBoard = leaderBoard[:(len(leaderBoard) - 1)]
+
+            leaderBoardChanged = False
+
+            if self.leaderBoard != leaderBoard:
+                self.leaderBoard = leaderBoard
+                leaderBoardChanged = True
 
             for client in self.clients:
                 snake = self.snakes[client.address]
 
                 # mobs
                 head = snake.pixels[0]
-                client.sendMessage("".join([message0, chr(head["i"]), chr(head["j"]), message2]))
+                client.sendMessage("".join([message0, chr(head["i"]),
+                        chr(head["j"]), message2]))
+
+                # ranking
+                if snake.rankingChanged:
+                    snake.rankingChanged = False
+                    client.sendMessage("".join([chr(5),
+                            str(self.ranking.index(client.address) + 1),
+                            str('/'),
+                            rankingLength]))
+
+                # leader board
+                if leaderBoardChanged or not snake.receivedLeaderBoard:
+                    snake.receivedLeaderBoard = True
+                    client.sendMessage("".join([chr(6), leaderBoard]))
 
                 # growth
                 if snake.grew:
