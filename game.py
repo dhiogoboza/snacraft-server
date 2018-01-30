@@ -150,8 +150,9 @@ class Game(Thread):
             if self.snakes[self.ranking[i]].size > self.snakes[self.ranking[i - 1]].size:
                 # swap
                 self.ranking[i], self.ranking[i - 1] = self.ranking[i - 1], self.ranking[i]
-                self.snakes[self.ranking[i]].rankingChanged = True
-                self.snakes[self.ranking[i - 1]].rankingChanged = True
+                # update ranking
+                self.snakes[self.ranking[i]].setRanking(i + 1)
+                self.snakes[self.ranking[i - 1]].setRanking(i)
 
     def close(self):
         self.running = False
@@ -209,7 +210,7 @@ class Game(Thread):
 
             if recalculateRanking:
                 self.recalculateRanking()
- 
+
             messageMobs = self.getSnakes() + self.getPowerUps()
 
             leaderBoard = ""
@@ -225,7 +226,7 @@ class Game(Thread):
                 leaderBoardMessage = "".join([MESSAGE_LEADERBOARD, self.leaderBoard])
 
             rankingLength = chr(len(self.ranking))
-            
+
             for client in self.clients:
                 snake = self.snakes[client.address]
 
@@ -238,9 +239,8 @@ class Game(Thread):
                     # ranking
                     if snake.rankingChanged:
                         snake.rankingChanged = False
-                        # TODO: save ranking at snake object to not needs get position at ranking list
                         client.sendMessage("".join([MESSAGE_RANKING,
-                                chr(snake.ranking.index(client.address) + 1),
+                                chr(snake.ranking),
                                 rankingLength]))
 
                     # leader board
