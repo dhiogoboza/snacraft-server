@@ -11,6 +11,13 @@ STATE_BUSY = 1
 MOB_MOVE_SPEED = 2
 MOB_INCREASE = 3
 
+# Messages types
+MESSAGE_MOBS = chr(2)
+MESSAGE_SNAKE_SIZE = chr(3)
+MESSAGE_DEATH = chr(4)
+MESSAGE_RANKING = chr(5)
+MESSAGE_LEADERBOARD = chr(6)
+
 class Game(Thread):
 
     def __init__(self, lines, columns, sleep_time):
@@ -139,12 +146,12 @@ class Game(Thread):
         self.generateRandomPowerUp(power_up["type"])
 
     def recalculateRanking(self):
-        for ranking in range(1, len(self.ranking)):
-            if self.snakes[self.ranking[ranking]].size > self.snakes[self.ranking[ranking - 1]].size:
+        for i in range(1, len(self.ranking)):
+            if self.snakes[self.ranking[i]].size > self.snakes[self.ranking[i - 1]].size:
                 # swap
-                self.ranking[ranking], self.ranking[ranking - 1] = self.ranking[ranking - 1], self.ranking[ranking]
-                self.snakes[self.ranking[ranking]].rankingChanged = True
-                self.snakes[self.ranking[ranking - 1]].rankingChanged = True
+                self.ranking[i], self.ranking[i - 1] = self.ranking[i - 1], self.ranking[i]
+                self.snakes[self.ranking[i]].rankingChanged = True
+                self.snakes[self.ranking[i - 1]].rankingChanged = True
 
     def close(self):
         self.running = False
@@ -202,11 +209,8 @@ class Game(Thread):
 
             if recalculateRanking:
                 self.recalculateRanking()
-
-            message0 = chr(2)
-            message2 = self.getSnakes() + self.getPowerUps()
-
-            rankingLength = str(len(self.ranking))
+ 
+            messageMobs = self.getSnakes() + self.getPowerUps()
 
             leaderBoard = ""
             for address in self.ranking[:10]:
@@ -218,36 +222,39 @@ class Game(Thread):
             if self.leaderBoard != leaderBoard:
                 self.leaderBoard = leaderBoard
                 leaderBoardChanged = True
+                leaderBoardMessage = "".join([MESSAGE_LEADERBOARD, self.leaderBoard])
 
+            rankingLength = chr(len(self.ranking))
+            
             for client in self.clients:
                 snake = self.snakes[client.address]
 
                 # mobs
                 head = snake.pixels[0]
-                client.sendMessage("".join([message0, chr(head["i"]),
-                        chr(head["j"]), message2]))
+                client.sendMessage("".join([MESSAGE_MOBS, chr(head["i"]),
+                        chr(head["j"]), messageMobs]))
 
-                # ranking
-                if snake.rankingChanged:
-                    snake.rankingChanged = False
-                    client.sendMessage("".join([chr(5),
-                            str(self.ranking.index(client.address) + 1),
-                            str('/'),
-                            rankingLength]))
+                if snake.live:
+                    # ranking
+                    if snake.rankingChanged:
+                        snake.rankingChanged = False
+                        # TODO: save ranking at snake object to not needs get position at ranking list
+                        client.sendMessage("".join([MESSAGE_RANKING,
+                                chr(snake.ranking.index(client.address) + 1),
+                                rankingLength]))
 
-                # leader board
-                if leaderBoardChanged or not snake.receivedLeaderBoard:
-                    snake.receivedLeaderBoard = True
-                    client.sendMessage("".join([chr(6), leaderBoard]))
+                    # leader board
+                    if leaderBoardChanged or not snake.receivedLeaderBoard:
+                        snake.receivedLeaderBoard = True
+                        client.sendMessage(leaderBoardMessage)
 
-                # growth
-                if snake.grew:
-                    snake.grew = False
-                    client.sendMessage("".join([chr(3), str(snake.size)]))
-
-                # death
-                if not snake.live:
-                    client.sendMessage("".join([chr(4)]))
+                    # growth
+                    if snake.grew:
+                        snake.grew = False
+                        client.sendMessage("".join([MESSAGE_SNAKE_SIZE, chr(snake.size)]))
+                else:
+                    # death
+                    client.sendMessage(MESSAGE_DEATH)
 
             cur_time = time.time()
             elapsed_time = cur_time - previous_time
