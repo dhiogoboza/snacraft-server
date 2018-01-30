@@ -12,7 +12,6 @@ class Snake():
         self.di = -1
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
-        self.ranking = -1
         self.rankingChanged = True # initially no ranking is set
         self.receivedLeaderBoard = False # initially no one received leaderboard
 
@@ -81,8 +80,3 @@ class Snake():
                 self.dj = 1
                 self.di = 0
                 self.can_move = False
-
-    def setRanking(self, newRanking):
-        if (self.ranking != newRanking):
-            self.ranking = newRanking
-            self.rankingChanged = True

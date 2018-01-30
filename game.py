@@ -139,43 +139,12 @@ class Game(Thread):
         self.generateRandomPowerUp(power_up["type"])
 
     def recalculateRanking(self):
-        self.ranking = self.merge_sort(self.ranking)
-
-        ranking = 1
-        for address in self.ranking:
-            self.snakes[address].setRanking(ranking)
-            ranking += 1
-
-    def merge(self, left, right):
-        result = []
-        left_idx, right_idx = 0, 0
-        while left_idx < len(left) and right_idx < len(right):
-            if self.snakes[left[left_idx]].size > self.snakes[right[right_idx]].size:
-                result.append(left[left_idx])
-                left_idx += 1
-            else:
-                result.append(right[right_idx])
-                right_idx += 1
-
-        if left:
-            result.extend(left[left_idx:])
-        if right:
-            result.extend(right[right_idx:])
-
-        return result
-
-    def merge_sort(self, array):
-        if len(array) <= 1:
-            return array
-
-        middle = len(array) // 2
-        left = array[:middle]
-        right = array[middle:]
-
-        left = self.merge_sort(left)
-        right = self.merge_sort(right)
-
-        return list(self.merge(left, right))
+        for ranking in range(1, len(self.ranking)):
+            if self.snakes[self.ranking[ranking]].size > self.snakes[self.ranking[ranking - 1]].size:
+                # swap
+                self.ranking[ranking], self.ranking[ranking - 1] = self.ranking[ranking - 1], self.ranking[ranking]
+                self.snakes[self.ranking[ranking]].rankingChanged = True
+                self.snakes[self.ranking[ranking - 1]].rankingChanged = True
 
     def close(self):
         self.running = False
@@ -262,7 +231,7 @@ class Game(Thread):
                 if snake.rankingChanged:
                     snake.rankingChanged = False
                     client.sendMessage("".join([chr(5),
-                            str(snake.ranking),
+                            str(self.ranking.index(client.address) + 1),
                             str('/'),
                             rankingLength]))
 
