@@ -33,12 +33,12 @@ sockets = Sockets(app)
 def handle(ws):
     # new client connected
     client = Client(ws)
-    client.sendMessage(chr(0) + "," + str(game.getMapStr()))
+    game.sendMap(client)
 
     # wait for snake's nickname
     client.nickname = ws.receive()
 
-    game.addClient(client)
+    game.sendHead(client, game.addClient(client))
 
     while not ws.closed:
         # handle incoming messages

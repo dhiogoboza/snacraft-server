@@ -49,7 +49,10 @@ class Snake():
             pixel["j"], previous_j = previous_j, pixel["j"]
 
         return previous_i, previous_j
-
+    
+    def getHead(self):
+        return self.pixels[0]
+    
     def move(self, key):
         if not self.live or not self.can_move:
             return
