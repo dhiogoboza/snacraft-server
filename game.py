@@ -12,6 +12,8 @@ MOB_MOVE_SPEED = 2
 MOB_INCREASE = 3
 
 # Messages types
+MESSAGE_MAP = chr(0)
+MESSAGE_HEAD = chr(1)
 MESSAGE_MOBS = chr(2)
 MESSAGE_SNAKE_SIZE = chr(3)
 MESSAGE_DEATH = chr(4)
@@ -51,12 +53,17 @@ class Game(Thread):
                     })
             self.matrix.append(line)
 
-        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.8)
-        t = ""
+        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
+        
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_INCREASE)
+            
+        for c in range(0, minor):
+            self.generateRandomPowerUp(MOB_MOVE_SPEED)
 
-
+    def sendMap(self, client):
+        client.sendMessage(",".join([MESSAGE_MAP, self.getMapStr()]))
+    
     def getKey(self, i, j):
         return i * self.columns + j
 
@@ -81,7 +88,7 @@ class Game(Thread):
 
     def addClient(self, client):
         self.clients.append(client)
-        self.createSnake(client.address, client.nickname)
+        return self.createSnake(client.address, client.nickname)
 
     def removeClient(self, client):
         if (client in self.clients):
@@ -104,8 +111,11 @@ class Game(Thread):
         for k, snake in self.snakes.items():
             snake.rankingChanged = True
 
-        self.snakes[address] = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
+        snake = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
+        self.snakes[address] = snake
         self.ranking.append(address)
+        
+        return snake
 
     def removeSnake(self, address):
         snake = self.snakes[address]
@@ -167,6 +177,9 @@ class Game(Thread):
         self.snakes.clear()
         self.power_ups.clear()
 
+    def sendHead(self, client, snake):
+        head = snake.getHead()
+        client.sendMessage("".join([MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]))
 
     def run(self):
         previous_time = 0
@@ -231,7 +244,7 @@ class Game(Thread):
                 snake = self.snakes[client.address]
 
                 # mobs
-                head = snake.pixels[0]
+                head = snake.getHead()
                 client.sendMessage("".join([MESSAGE_MOBS, chr(head["i"]),
                         chr(head["j"]), messageMobs]))
 
