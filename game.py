@@ -10,6 +10,7 @@ STATE_EMPTY = 0
 STATE_BUSY = 1
 MOB_MOVE_SPEED = 2
 MOB_INCREASE = 3
+MOB_CORPSE = 4
 
 # Messages types
 MESSAGE_MAP = chr(0)
@@ -54,16 +55,16 @@ class Game(Thread):
             self.matrix.append(line)
 
         minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
-        
+
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_INCREASE)
-            
+
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_MOVE_SPEED)
 
     def sendMap(self, client):
         client.sendMessage(",".join([MESSAGE_MAP, self.getMapStr()]))
-    
+
     def getKey(self, i, j):
         return i * self.columns + j
 
@@ -114,8 +115,27 @@ class Game(Thread):
         snake = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
         self.snakes[address] = snake
         self.ranking.append(address)
-        
+
         return snake
+
+    def killSnake(self, snake):
+        pixels = snake.pixels
+        snake.kill()
+
+        power_up_type = MOB_CORPSE
+
+        for pixel in snake.pixels:
+            i, j = pixel['i'], pixel['j']
+
+            power_up = {}
+            power_up["i"] = i
+            power_up["j"] = j
+            power_up["type"] = power_up_type
+
+            key = self.getKey(i, j)
+
+            self.power_ups[key] = power_up
+            self.matrix[i][j]["mob"] = power_up_type
 
     def removeSnake(self, address):
         snake = self.snakes[address]
@@ -149,11 +169,13 @@ class Game(Thread):
         key = self.getKey(i, j)
         power_up = self.power_ups[key]
 
-        if power_up["type"] == MOB_INCREASE:
+        if power_up["type"] == MOB_INCREASE or power_up["type"] == MOB_CORPSE:
             snake.increaseSize()
 
         self.power_ups.pop(key)
-        self.generateRandomPowerUp(power_up["type"])
+
+        if power_up["type"] != MOB_CORPSE:
+            self.generateRandomPowerUp(power_up["type"])
 
     def recalculateRanking(self):
         for i in range(1, len(self.ranking)):
@@ -199,7 +221,7 @@ class Game(Thread):
                 pixel = self.matrix[new_i][new_j]
 
                 if (pixel["state"] == STATE_BUSY):
-                    snake.kill()
+                    self.killSnake(snake)
 
                     continue
 
