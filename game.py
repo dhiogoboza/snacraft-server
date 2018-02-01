@@ -233,16 +233,12 @@ class Game(Thread):
                 int_new_i = int(new_i)
                 int_new_j = int(new_j)
                 
-                #print("head:", head["i"], ",", head["j"])
-                #print("int_new:", int_new_i, ",", int_new_j)
-                #print("=================")
                 if int_new_i == int(head["i"]) and int_new_j == int(head["j"]):
                     # snake do not moved
                     
                     head["i"] = new_i
                     head["j"] = new_j
-                    #snake.walk(new_i, new_j)
-                    #snake.can_move = True
+                    
                     continue
                     
                 pixel = self.matrix[int_new_i][int_new_j]
