@@ -8,8 +8,9 @@ class Snake():
         self.pixels = []
         self.live = True
         self.can_move = True
+        self.speed = 0.5
         self.dj = 0
-        self.di = -1
+        self.di = -self.speed
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
         self.ranking = 1
@@ -26,7 +27,7 @@ class Snake():
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            game_matrix[pixel["i"]][pixel["j"]]["state"] = STATE_EMPTY
+            game_matrix[int(pixel["i"])][int(pixel["j"])]["state"] = STATE_EMPTY
 
     def kill(self):
         self.live = False
@@ -34,7 +35,7 @@ class Snake():
     def getPixelsStr(self):
         pixels_str = ""
         for pixel in self.pixels:
-            pixels_str = pixels_str + chr(pixel["i"]) + chr(pixel["j"]) + chr(pixel["c"])
+            pixels_str = pixels_str + chr(int(pixel["i"])) + chr(int(pixel["j"])) + chr(int(pixel["c"]))
 
         return pixels_str
 
@@ -44,9 +45,12 @@ class Snake():
         self.grew = True
 
     def walk(self, previous_i, previous_j):
-        for pixel in self.pixels:
-            pixel["i"], previous_i = previous_i, pixel["i"]
-            pixel["j"], previous_j = previous_j, pixel["j"]
+        self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
+        self.pixels[0]["j"], previous_j = previous_j, int(self.pixels[0]["j"])
+        
+        for i in range(1, len(self.pixels)):
+            self.pixels[i]["i"], previous_i = previous_i, self.pixels[i]["i"]
+            self.pixels[i]["j"], previous_j = previous_j, self.pixels[i]["j"]
 
         return previous_i, previous_j
     
@@ -61,28 +65,32 @@ class Snake():
         if key == "0":
             if (self.di == 0):
                 self.dj = 0
-                self.di = -1
+                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.di = -self.speed
                 self.can_move = False
 
         # KEY_DOWN
         elif key == "1":
             if (self.di == 0):
                 self.dj = 0
-                self.di = 1
+                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.di = self.speed
                 self.can_move = False
 
         # KEY_LEFT
         elif key == "2":
             if (self.dj == 0):
-                self.dj = -1
+                self.dj = -self.speed
                 self.di = 0
+                self.pixels[0]["i"] = int(self.pixels[0]["i"])
                 self.can_move = False
 
         # KEY_RIGHT
         elif key == "3":
             if (self.dj == 0):
-                self.dj = 1
+                self.dj = self.speed
                 self.di = 0
+                self.pixels[0]["i"] = int(self.pixels[0]["i"])
                 self.can_move = False
 
     def setRanking(self, ranking):
