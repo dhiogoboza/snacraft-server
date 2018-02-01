@@ -75,7 +75,7 @@ class Game(Thread):
             i = random.randrange(1, self.lines - 1)
             j = random.randrange(1, self.columns - 1)
 
-            if self.matrix[i][j]["mob"] == 0:
+            if self.matrix[i][j]["mob"] == STATE_EMPTY and self.matrix[i][j]["state"] == STATE_EMPTY:
                 break;
 
         power_up["i"] = i
