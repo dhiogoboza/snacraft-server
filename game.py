@@ -8,9 +8,12 @@ SNAKE_INITIAL_SIZE = 5
 
 STATE_EMPTY = 0
 STATE_BUSY = 1
-MOB_MOVE_SPEED = 2
+# SNAKE_COLOR = 2 TODO: change snakes colors
 MOB_INCREASE = 3
 MOB_CORPSE = 4
+MOB_MOVE_SPEED = 5
+
+SPEED_INCREMENT = 0.1
 
 # Messages types
 MESSAGE_MAP = chr(0)
@@ -50,7 +53,7 @@ class Game(Thread):
                 line.append({
                         "it": it,
                         "state": it,
-                        "mob": 0
+                        "mob": STATE_EMPTY
                     })
             self.matrix.append(line)
 
@@ -59,7 +62,7 @@ class Game(Thread):
         for c in range(0, minor):
             self.generateRandomPowerUp(MOB_INCREASE)
 
-        for c in range(0, minor):
+        for c in range(0, int(minor * 0.2)):
             self.generateRandomPowerUp(MOB_MOVE_SPEED)
 
     def sendMap(self, client):
@@ -125,7 +128,7 @@ class Game(Thread):
         power_up_type = MOB_CORPSE
 
         for pixel in snake.pixels:
-            i, j = pixel['i'], pixel['j']
+            i, j = int(pixel['i']), int(pixel['j'])
 
             power_up = {}
             power_up["i"] = i
@@ -168,14 +171,23 @@ class Game(Thread):
 
         key = self.getKey(i, j)
         power_up = self.power_ups[key]
+        ptype = power_up["type"]
 
-        if power_up["type"] == MOB_INCREASE or power_up["type"] == MOB_CORPSE:
+        if ptype == MOB_INCREASE:
             snake.increaseSize()
-
-        self.power_ups.pop(key)
-
-        if power_up["type"] != MOB_CORPSE:
-            self.generateRandomPowerUp(power_up["type"])
+            self.generateRandomPowerUp(ptype)
+        elif ptype == MOB_CORPSE:
+            snake.increaseSize()
+            # do not generate another
+        elif ptype == MOB_MOVE_SPEED:
+            snake.speed = snake.speed + SPEED_INCREMENT
+            
+            if snake.speed > 1:
+                snake.speed = 1
+        
+            self.generateRandomPowerUp(ptype)
+            
+        self.power_ups.pop(key)            
 
     def recalculateRanking(self):
         for i in range(1, len(self.ranking)):
@@ -217,16 +229,26 @@ class Game(Thread):
 
                 new_i = head["i"] + snake.di
                 new_j = head["j"] + snake.dj
-
-                pixel = self.matrix[new_i][new_j]
-
+                
+                int_new_i = int(new_i)
+                int_new_j = int(new_j)
+                
+                if int_new_i == int(head["i"]) and int_new_j == int(head["j"]):
+                    # snake do not moved
+                    
+                    head["i"] = new_i
+                    head["j"] = new_j
+                    
+                    continue
+                    
+                pixel = self.matrix[int_new_i][int_new_j]
+                
                 if (pixel["state"] == STATE_BUSY):
                     self.killSnake(snake)
-
                     continue
 
                 if not (pixel["mob"] == 0):
-                    self.processMob(snake, pixel, new_i, new_j)
+                    self.processMob(snake, pixel, int_new_i, int_new_j)
 
                 previous_i = new_i
                 previous_j = new_j
@@ -235,7 +257,7 @@ class Game(Thread):
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
 
-                self.matrix[previous_i][previous_j]["state"] = STATE_EMPTY
+                self.matrix[int(previous_i)][int(previous_j)]["state"] = STATE_EMPTY
                 snake.can_move = True
 
                 if snake.grew:
@@ -267,8 +289,8 @@ class Game(Thread):
 
                 # mobs
                 head = snake.getHead()
-                client.sendMessage("".join([MESSAGE_MOBS, chr(head["i"]),
-                        chr(head["j"]), messageMobs]))
+                client.sendMessage("".join([MESSAGE_MOBS, chr(int(head["i"])),
+                        chr(int(head["j"])), messageMobs]))
 
                 if snake.live:
                     # ranking
