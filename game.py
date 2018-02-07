@@ -1,28 +1,10 @@
 import random
 import time
 
+from map import Map
 from snake import Snake
 from threading import Thread
-
-SNAKE_INITIAL_SIZE = 5
-
-STATE_EMPTY = 0
-STATE_BUSY = 1
-# SNAKE_COLOR = 2 TODO: change snakes colors
-MOB_INCREASE = 3
-MOB_CORPSE = 4
-MOB_MOVE_SPEED = 5
-
-SPEED_INCREMENT = 0.1
-
-# Messages types
-MESSAGE_MAP = chr(0)
-MESSAGE_HEAD = chr(1)
-MESSAGE_MOBS = chr(2)
-MESSAGE_SNAKE_SIZE = chr(3)
-MESSAGE_DEATH = chr(4)
-MESSAGE_RANKING = chr(5)
-MESSAGE_LEADERBOARD = chr(6)
+from constants import Constants as Cts
 
 class Game(Thread):
 
@@ -34,61 +16,18 @@ class Game(Thread):
         self.columns = columns
         self.sleep_time = sleep_time
         self.running = True
-        self.matrix = []
+        self.map = Map(lines, columns)
         self.snakes = {}
-        self.power_ups = {}
         self.ranking = []
         self.leaderBoard = ""
 
     def init(self):
         self.clients = []
 
-        lines_1 = self.lines - 1
-        columns_1 = self.columns - 1
-
-        for i in range(0, self.lines):
-            line = []
-            for j in range(0, self.columns):
-                it = STATE_BUSY if (i == 0) or (i == lines_1) or (j == 0) or (j == columns_1) else STATE_EMPTY
-                line.append({
-                        "it": it,
-                        "state": it,
-                        "mob": STATE_EMPTY
-                    })
-            self.matrix.append(line)
-
-        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
-
-        for c in range(0, minor):
-            self.generateRandomPowerUp(MOB_INCREASE)
-
-        for c in range(0, int(minor * 0.2)):
-            self.generateRandomPowerUp(MOB_MOVE_SPEED)
-
+        self.map.init()        
+    
     def sendMap(self, client):
-        client.sendMessage(",".join([MESSAGE_MAP, self.getMapStr()]))
-
-    def getKey(self, i, j):
-        return i * self.columns + j
-
-    def generateRandomPowerUp(self, power_up_type):
-        power_up = {}
-
-        while True:
-            i = random.randrange(1, self.lines - 1)
-            j = random.randrange(1, self.columns - 1)
-
-            if self.matrix[i][j]["mob"] == STATE_EMPTY and self.matrix[i][j]["state"] == STATE_EMPTY:
-                break;
-
-        power_up["i"] = i
-        power_up["j"] = j
-        power_up["type"] = power_up_type
-
-        key = self.getKey(i, j)
-
-        self.power_ups[key] = power_up
-        self.matrix[i][j]["mob"] = power_up_type
+        client.sendMessage(",".join([Cts.MESSAGE_MAP, self.map.getMapStr()]))
 
     def addClient(self, client):
         self.clients.append(client)
@@ -104,7 +43,7 @@ class Game(Thread):
 
         for i in range(0, self.lines):
             for j in range(0, self.columns):
-                to_return = to_return + "," + str(self.matrix[i][j]["it"])
+                to_return = to_return + "," + str(self.map[i][j]["it"])
 
         return to_return
 
@@ -115,7 +54,7 @@ class Game(Thread):
         for k, snake in self.snakes.items():
             snake.rankingChanged = True
 
-        snake = Snake(SNAKE_INITIAL_SIZE, i, j, self.matrix, nickname)
+        snake = Snake(Cts.SNAKE_COLOR, Cts.SNAKE_INITIAL_SIZE, i, j, self.map, nickname)
         self.snakes[address] = snake
         self.ranking.append(address)
 
@@ -125,7 +64,7 @@ class Game(Thread):
         pixels = snake.pixels
         snake.kill()
 
-        power_up_type = MOB_CORPSE
+        power_up_type = Cts.MOB_CORPSE
 
         for pixel in snake.pixels:
             i, j = int(pixel['i']), int(pixel['j'])
@@ -135,14 +74,14 @@ class Game(Thread):
             power_up["j"] = j
             power_up["type"] = power_up_type
 
-            key = self.getKey(i, j)
+            key = self.map.getKey(i, j)
 
-            self.power_ups[key] = power_up
-            self.matrix[i][j]["mob"] = power_up_type
+            self.map.power_ups[key] = power_up
+            self.map[i][j]["mob"] = power_up_type
 
     def removeSnake(self, address):
         snake = self.snakes[address]
-        snake.clear(self.matrix)
+        snake.clear(self.map)
         self.snakes.pop(address)
         self.ranking.remove(address)
 
@@ -156,38 +95,31 @@ class Game(Thread):
 
         return snakes
 
-    def getPowerUps(self):
-        power_ups = ""
-        for k, power_up in self.power_ups.items():
-            power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["type"])
-
-        return power_ups
-
     def moveSnake(self, address, key):
         self.snakes[address].move(key)
 
     def processMob(self, snake, pixel, i, j):
-        pixel["mob"] = STATE_EMPTY
+        pixel["mob"] = Cts.STATE_EMPTY
 
-        key = self.getKey(i, j)
-        power_up = self.power_ups[key]
+        key = self.map.getKey(i, j)
+        power_up = self.map.power_ups[key]
         ptype = power_up["type"]
 
-        if ptype == MOB_INCREASE:
+        if ptype == Cts.MOB_INCREASE:
             snake.increaseSize()
-            self.generateRandomPowerUp(ptype)
-        elif ptype == MOB_CORPSE:
+            self.map.generateRandomPowerUp(ptype)
+        elif ptype == Cts.MOB_CORPSE:
             snake.increaseSize()
             # do not generate another
-        elif ptype == MOB_MOVE_SPEED:
-            snake.speed = snake.speed + SPEED_INCREMENT
+        elif ptype == Cts.MOB_MOVE_SPEED:
+            snake.speed = snake.speed + Cts.SPEED_INCREMENT
             
             if snake.speed > 1:
                 snake.speed = 1
         
-            self.generateRandomPowerUp(ptype)
+            self.map.generateRandomPowerUp(ptype)
             
-        self.power_ups.pop(key)            
+        self.map.power_ups.pop(key)            
 
     def recalculateRanking(self):
         for i in range(1, len(self.ranking)):
@@ -207,13 +139,13 @@ class Game(Thread):
         for client in self.clients:
             client.close()
 
-        del self.matrix[:]
+        del self.map[:]
         self.snakes.clear()
-        self.power_ups.clear()
+        self.map.power_ups.clear()
 
     def sendHead(self, client, snake):
         head = snake.getHead()
-        client.sendMessage("".join([MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]))
+        client.sendMessage("".join([Cts.MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]))
 
     def run(self):
         previous_time = 0
@@ -241,9 +173,9 @@ class Game(Thread):
                     
                     continue
                     
-                pixel = self.matrix[int_new_i][int_new_j]
+                pixel = self.map[int_new_i][int_new_j]
                 
-                if (pixel["state"] == STATE_BUSY):
+                if (pixel["state"] == Cts.STATE_BUSY):
                     self.killSnake(snake)
                     continue
 
@@ -253,11 +185,11 @@ class Game(Thread):
                 previous_i = new_i
                 previous_j = new_j
 
-                pixel["state"] = STATE_BUSY
+                pixel["state"] = Cts.STATE_BUSY
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
 
-                self.matrix[int(previous_i)][int(previous_j)]["state"] = STATE_EMPTY
+                self.map[int(previous_i)][int(previous_j)]["state"] = Cts.STATE_EMPTY
                 snake.can_move = True
 
                 if snake.grew:
@@ -268,7 +200,7 @@ class Game(Thread):
             if recalculateRanking:
                 self.recalculateRanking()
 
-            messageMobs = self.getSnakes() + self.getPowerUps()
+            messageMobs = self.getSnakes() + self.map.getPowerUps()
 
             leaderBoard = ""
             for address in self.ranking[:10]:
@@ -280,7 +212,7 @@ class Game(Thread):
             if self.leaderBoard != leaderBoard:
                 self.leaderBoard = leaderBoard
                 leaderBoardChanged = True
-                leaderBoardMessage = "".join([MESSAGE_LEADERBOARD, self.leaderBoard])
+                leaderBoardMessage = "".join([Cts.MESSAGE_LEADERBOARD, self.leaderBoard])
 
             rankingLength = chr(len(self.ranking))
 
@@ -289,14 +221,14 @@ class Game(Thread):
 
                 # mobs
                 head = snake.getHead()
-                client.sendMessage("".join([MESSAGE_MOBS, chr(int(head["i"])),
+                client.sendMessage("".join([Cts.MESSAGE_MOBS, chr(int(head["i"])),
                         chr(int(head["j"])), messageMobs]))
 
                 if snake.live:
                     # ranking
                     if snake.rankingChanged:
                         snake.rankingChanged = False
-                        client.sendMessage("".join([MESSAGE_RANKING,
+                        client.sendMessage("".join([Cts.MESSAGE_RANKING,
                                 chr(snake.ranking),
                                 rankingLength]))
 
@@ -308,10 +240,10 @@ class Game(Thread):
                     # growth
                     if snake.grew:
                         snake.grew = False
-                        client.sendMessage("".join([MESSAGE_SNAKE_SIZE, chr(snake.size)]))
+                        client.sendMessage("".join([Cts.MESSAGE_SNAKE_SIZE, chr(snake.size)]))
                 else:
                     # death
-                    client.sendMessage(MESSAGE_DEATH)
+                    client.sendMessage(Cts.MESSAGE_DEATH)
 
             cur_time = time.time()
             elapsed_time = cur_time - previous_time

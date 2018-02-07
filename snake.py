@@ -1,9 +1,8 @@
-STATE_EMPTY = 0
-STATE_BUSY = 1
+from constants import Constants as Cts
 
 class Snake():
 
-    def __init__(self, size, i, j, game_matrix, nickname):
+    def __init__(self, color, size, i, j, game_matrix, nickname):
         self.nickname = nickname
         self.pixels = []
         self.live = True
@@ -21,13 +20,13 @@ class Snake():
             self.pixels.append({
                     "i": c,
                     "j": j,
-                    "c": 2
+                    "c": color
                 })
-            game_matrix[c][j]["state"] = STATE_BUSY
+            game_matrix[c][j]["state"] = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            game_matrix[int(pixel["i"])][int(pixel["j"])]["state"] = STATE_EMPTY
+            game_matrix[int(pixel["i"])][int(pixel["j"])]["state"] = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False
