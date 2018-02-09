@@ -72,6 +72,7 @@ class Game(Thread):
             power_up = {}
             power_up["i"] = i
             power_up["j"] = j
+            power_up["item"] = power_up_type
             power_up["type"] = power_up_type
 
             key = self.map.getKey(i, j)
@@ -107,7 +108,7 @@ class Game(Thread):
 
         if ptype == Cts.MOB_INCREASE:
             snake.increaseSize()
-            self.map.generateRandomPowerUp(ptype)
+            self.map.generateRandomPowerUp(ptype, power_up["item"])
         elif ptype == Cts.MOB_CORPSE:
             snake.increaseSize()
             # do not generate another
@@ -117,7 +118,7 @@ class Game(Thread):
             if snake.speed > 1:
                 snake.speed = 1
         
-            self.map.generateRandomPowerUp(ptype)
+            self.map.generateRandomPowerUp(ptype, power_up["item"])
             
         self.map.power_ups.pop(key)            
 
