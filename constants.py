@@ -4,17 +4,17 @@ class Constants:
 
     STATE_EMPTY = 0
     STATE_BUSY = 1
+    MOB_INCREASE = 16
 
     # Tiles contants
 
     STONES = [1, 5]
     CLAY = [6, 10]
     GRASS = [11, 15]
-
-    MOB_INCREASE = 16
-    MOB_CORPSE = 17
-    MOB_MOVE_SPEED = 18
-    SNAKE_COLOR = 19 # TODO: change snakes colors
+    MOB_FOOD_ITEMS = [16, 18]
+    MOB_CORPSE = 19
+    MOB_MOVE_SPEED = 20
+    SNAKE_COLOR = 21 # TODO: change snakes colors
 
 
     # Messages types

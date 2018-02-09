@@ -23,15 +23,17 @@ class Map():
             
         self.drawWalls()
 
-        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
+        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.2)
         
         for c in range(0, minor):
-            self.generateRandomPowerUp(Cts.MOB_INCREASE)
+            for item in range(Cts.MOB_FOOD_ITEMS[0], Cts.MOB_FOOD_ITEMS[1]):
+                self.generateRandomPowerUp(Cts.MOB_INCREASE, item)
 
+        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
         for c in range(0, int(minor * 0.2)):
-            self.generateRandomPowerUp(Cts.MOB_MOVE_SPEED)
+            self.generateRandomPowerUp(Cts.MOB_MOVE_SPEED, Cts.MOB_MOVE_SPEED)
             
-    def generateRandomPowerUp(self, power_up_type):
+    def generateRandomPowerUp(self, power_up_type, item):
         power_up = {}
 
         while True:
@@ -43,6 +45,7 @@ class Map():
 
         power_up["i"] = i
         power_up["j"] = j
+        power_up["item"] = item
         power_up["type"] = power_up_type
 
         key = self.getKey(i, j)
@@ -102,7 +105,7 @@ class Map():
     def getPowerUps(self):
         power_ups = ""
         for k, power_up in self.power_ups.items():
-            power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["type"])
+            power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
         return power_ups
     
