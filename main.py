@@ -33,19 +33,21 @@ sockets = Sockets(app)
 def handle(ws):
     # new client connected
     client = Client(ws)
+     
     game.sendMap(client)
 
     # wait for snake's nickname
     client.nickname = ws.receive()
 
-    game.sendHead(client, game.addClient(client))
+    game.addClient(client)
+    game.sendHead(client)
 
     while not ws.closed:
         # handle incoming messages
         client.data = ws.receive()
 
         if client.data and client.data[0] == '1':
-            game.moveSnake(client.address, client.data[2])
+            game.moveSnake(client, client.data[2])
 
     # terminate connection
     game.removeClient(client)

@@ -18,7 +18,7 @@ class Map():
                 line.append({"it": Cts.STATE_EMPTY, "state": Cts.STATE_EMPTY, "mob": Cts.STATE_EMPTY})
             self.matrix.append(line)
         
-        for i in range(0, 10):
+        for i in range(0, 20):
             self.drawIsland()
             
         self.drawWalls()
@@ -54,9 +54,20 @@ class Map():
         self.matrix[i][j]["mob"] = power_up_type
             
     def drawIsland(self):
-        start_i = random.randrange(20, self.lines - 20)
-        start_j = random.randrange(20, self.columns - 20)
-        size = random.randrange(5, 8)
+        start_i = random.randrange(10, (self.lines / 2) - 20)
+        start_j = random.randrange(10, (self.columns / 2) - 20)
+        
+        q = random.randrange(0, 4)
+        
+        if (q == 1):
+            start_j = start_j + (self.columns / 2)
+        elif (q == 2):
+            start_i = start_i + (self.lines / 2)
+            start_j = start_j + (self.columns / 2)
+        elif (q == 3):
+            start_i = start_i + (self.lines / 2)
+            
+        size = random.randrange(5, 15)
         
         end_i = start_i + size
         end_j = start_j + size

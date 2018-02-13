@@ -2,8 +2,7 @@ from constants import Constants as Cts
 
 class Snake():
 
-    def __init__(self, color, size, i, j, game_matrix, nickname):
-        self.nickname = nickname
+    def __init__(self, color, size, i, j, game_matrix):
         self.pixels = []
         self.live = True
         self.can_move = True
@@ -12,8 +11,6 @@ class Snake():
         self.di = -self.speed
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
-        self.ranking = 1
-        self.rankingChanged = True # initially no ranking is set
         self.receivedLeaderBoard = False # initially no one received leaderboard
 
         for c in range(i, i + size):
@@ -91,7 +88,3 @@ class Snake():
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
                 self.can_move = False
-
-    def setRanking(self, ranking):
-        self.rankingChanged = (self.ranking != ranking)
-        self.ranking = ranking
