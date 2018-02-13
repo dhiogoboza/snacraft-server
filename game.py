@@ -64,7 +64,7 @@ class Game(Thread):
         pixels = snake.pixels
         snake.kill()
 
-        power_up_type = Cts.MOB_CORPSE
+        power_up_type = Cts.MOB_CORPSE[0]
 
         for pixel in snake.pixels:
             i, j = int(pixel['i']), int(pixel['j'])
@@ -72,7 +72,7 @@ class Game(Thread):
             power_up = {}
             power_up["i"] = i
             power_up["j"] = j
-            power_up["item"] = power_up_type
+            power_up["item"] = random.randrange(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
             power_up["type"] = power_up_type
 
             key = self.map.getKey(i, j)
@@ -101,7 +101,7 @@ class Game(Thread):
         if ptype == Cts.MOB_INCREASE:
             snake.increaseSize()
             self.map.generateRandomPowerUp(ptype, power_up["item"])
-        elif ptype == Cts.MOB_CORPSE:
+        elif ptype == Cts.MOB_CORPSE[0]:
             snake.increaseSize()
             # do not generate another
         elif ptype == Cts.MOB_MOVE_SPEED:
