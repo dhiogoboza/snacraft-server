@@ -148,6 +148,7 @@ class Game(Thread):
         while self.running:
             # randomize power ups items
             if (count == 10):
+                # FIXME: create a list with only randomizable power ups and iterate only over it
                 for k, power_up in self.map.power_ups.items():
                     if (power_up["type"] == Cts.MOB_CORPSE[0]):
                         power_up["item"] = random.randrange(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
