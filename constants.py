@@ -12,9 +12,9 @@ class Constants:
     CLAY = [6, 11]
     GRASS = [11, 16]
     MOB_FOOD_ITEMS = [16, 19]
-    MOB_CORPSE = 19
-    MOB_MOVE_SPEED = 20
-    SNAKE_COLOR = 21 # TODO: change snakes colors
+    MOB_CORPSE = [19, 23]
+    MOB_MOVE_SPEED = 23
+    SNAKE_COLOR = 24 # TODO: change snakes colors
 
 
     # Messages types
