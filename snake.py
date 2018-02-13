@@ -37,8 +37,9 @@ class Snake():
 
     def increaseSize(self):
         self.pixels.insert(0, self.pixels[0].copy())
-        self.size = self.size + 1
-        self.grew = True
+        if (self.size < 127):
+            self.size = self.size + 1
+            self.grew = True
 
     def walk(self, previous_i, previous_j):
         self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
