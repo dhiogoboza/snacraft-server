@@ -143,8 +143,18 @@ class Game(Thread):
     def run(self):
         previous_time = 0
         cur_time = 0
+        count = 0
 
         while self.running:
+            # randomize power ups items
+            if (count == 10):
+                for k, power_up in self.map.power_ups.items():
+                    if (power_up["type"] == Cts.MOB_CORPSE[0]):
+                        power_up["item"] = random.randrange(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
+                count = 0
+            else:
+                count = count + 1
+                
             recalculateRanking = False
             for client in self.clients:
                 snake = client.snake
