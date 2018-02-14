@@ -5,8 +5,8 @@ class Client():
     """
     def __init__(self, ws):
         self.ws = ws
+        self.id = 0
         self.address = self.ws.environ['HTTP_SEC_WEBSOCKET_KEY']
-        self.data = None
         self.nickname = ''
         self.snake = None
         self.ranking = 1
@@ -14,6 +14,9 @@ class Client():
         
     def setSnake(self, s):
         self.snake = s
+        
+    def setId(self, client_id):
+        self.id = client_id
         
     def setRanking(self, ranking):
         self.rankingChanged = (self.ranking != ranking)
