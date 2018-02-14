@@ -77,7 +77,7 @@ class Game(Thread):
 
             key = self.map.getKey(i, j)
 
-            self.map.power_ups[key] = power_up
+            self.map.animated_power_ups[key] = power_up
             self.map.pixel(i, j)["mob"] = power_up_type
             self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
 
@@ -92,27 +92,32 @@ class Game(Thread):
         client.snake.move(key)
 
     def processMob(self, snake, pixel, i, j):
-        pixel["mob"] = Cts.STATE_EMPTY
-
         key = self.map.getKey(i, j)
-        power_up = self.map.power_ups[key]
-        ptype = power_up["type"]
-
-        if ptype == Cts.MOB_INCREASE:
+        
+        if pixel["mob"] == Cts.MOB_INCREASE:
+            power_up = self.map.power_ups[key]
+            
             snake.increaseSize()
-            self.map.generateRandomPowerUp(ptype, power_up["item"])
-        elif ptype == Cts.MOB_CORPSE[0]:
+            self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
+            self.map.power_ups.pop(key)
+        elif pixel["mob"] == Cts.MOB_CORPSE[0]:
+            power_up = self.map.animated_power_ups[key]
+            
             snake.increaseSize()
+            self.map.animated_power_ups.pop(key)
             # do not generate another
-        elif ptype == Cts.MOB_MOVE_SPEED:
+        elif pixel["mob"] == Cts.MOB_MOVE_SPEED:
+            power_up = self.map.power_ups[key]
+            
             snake.speed = snake.speed + Cts.SPEED_INCREMENT
             
             if snake.speed > 1:
                 snake.speed = 1
         
-            self.map.generateRandomPowerUp(ptype, power_up["item"])
-            
-        self.map.power_ups.pop(key)            
+            self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
+            self.map.power_ups.pop(key)
+        
+        pixel["mob"] = Cts.STATE_EMPTY
 
     def recalculateRanking(self):
         for i in range(1, len(self.ranking)):
@@ -149,7 +154,7 @@ class Game(Thread):
             # randomize power ups items
             if (count == 10):
                 # FIXME: create a list with only randomizable power ups and iterate only over it
-                for k, power_up in self.map.power_ups.items():
+                for k, power_up in self.map.animated_power_ups.items():
                     if (power_up["type"] == Cts.MOB_CORPSE[0]):
                         power_up["item"] = random.randrange(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
                 count = 0
