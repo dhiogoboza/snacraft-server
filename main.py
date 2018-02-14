@@ -36,18 +36,26 @@ def handle(ws):
      
     game.sendMap(client)
 
-    # wait for snake's nickname
-    client.nickname = ws.receive()
+    # wait for snake's data
+    data = ws.receive()
+    data_split = data.split(",")
+    
+    client.nickname = data_split[0]
+    
+    if (len(client.nickname) > 15):
+        client.nickname = client.nickname[0:15]
+    
+    print(client.nickname, "connected")
 
-    game.addClient(client)
+    game.addClient(client, int(data_split[1]))
     game.sendHead(client)
 
     while not ws.closed:
         # handle incoming messages
-        client.data = ws.receive()
+        data = ws.receive()
 
-        if client.data and client.data[0] == '1':
-            game.moveSnake(client, client.data[2])
+        if data and data[0] == '1':
+            game.moveSnake(client, data[2])
 
     # terminate connection
     game.removeClient(client)

@@ -27,8 +27,11 @@ class Game(Thread):
     def sendMap(self, client):
         client.sendMessage(",".join([Cts.MESSAGE_MAP, self.map.getMapStr()]))
 
-    def addClient(self, client):
-        self.createSnake(client)
+    def addClient(self, client, color):
+        if color < Cts.SNAKE_COLOR:
+            color = Cts.SNAKE_COLOR
+    
+        self.createSnake(client, color)
         self.clients.append(client)
 
     def removeClient(self, client):
@@ -49,14 +52,26 @@ class Game(Thread):
 
         return to_return
 
-    def createSnake(self, client):
+    def createSnake(self, client, color):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.clients)
 
+        client_id = 0
+        previous_id = -5
+        
+        for c in self.clients:
+            if (c.id - previous_id > 1):
+                break
+
+            previous_id = c.id
+            client_id = client_id + 1
+        
+        client.setId(client_id)
+            
         for c in self.clients:
             c.rankingChanged = True
 
-        snake = Snake(Cts.SNAKE_COLOR, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
+        snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         self.ranking.append(client)
         client.setSnake(snake)
 
@@ -153,10 +168,10 @@ class Game(Thread):
         while self.running:
             # randomize power ups items
             if (count == 10):
-                # FIXME: create a list with only randomizable power ups and iterate only over it
                 for k, power_up in self.map.animated_power_ups.items():
                     if (power_up["type"] == Cts.MOB_CORPSE[0]):
                         power_up["item"] = random.randrange(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
+                
                 count = 0
             else:
                 count = count + 1
