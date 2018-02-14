@@ -7,6 +7,7 @@ class Map():
     def __init__(self, lines, columns):
         self.matrix = []
         self.power_ups = {}
+        self.animated_power_ups = {}
         self.lines = lines
         self.columns = columns
         
@@ -115,7 +116,11 @@ class Map():
     
     def getPowerUps(self):
         power_ups = ""
+        
         for k, power_up in self.power_ups.items():
+            power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
+            
+        for k, power_up in self.animated_power_ups.items():
             power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
         return power_ups
