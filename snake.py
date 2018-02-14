@@ -19,11 +19,11 @@ class Snake():
                     "j": j,
                     "c": color
                 })
-            game_matrix[c][j]["state"] = Cts.STATE_BUSY
+            game_matrix.pixel(c, j)["state"] = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            game_matrix[int(pixel["i"])][int(pixel["j"])]["state"] = Cts.STATE_EMPTY
+            game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))["state"] = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False

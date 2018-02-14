@@ -123,6 +123,6 @@ class Map():
     def getKey(self, i, j):
         return i * self.columns + j
     
-    def __getitem__(self, index):
-        return self.matrix[index]
+    def pixel(self, i, j):
+        return self.matrix[i][j]
 

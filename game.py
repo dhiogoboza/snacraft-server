@@ -45,7 +45,7 @@ class Game(Thread):
 
         for i in range(0, self.lines):
             for j in range(0, self.columns):
-                to_return = to_return + "," + str(self.map[i][j]["it"])
+                to_return = to_return + "," + str(self.map.pixel(i, j)["it"])
 
         return to_return
 
@@ -78,8 +78,8 @@ class Game(Thread):
             key = self.map.getKey(i, j)
 
             self.map.power_ups[key] = power_up
-            self.map[i][j]["mob"] = power_up_type
-            self.map[i][j]["state"] = Cts.STATE_EMPTY
+            self.map.pixel(i, j)["mob"] = power_up_type
+            self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
 
     def getSnakes(self):
         snakes = ""
@@ -163,7 +163,7 @@ class Game(Thread):
                 if not snake.live:
                     continue
 
-                head = snake.pixels[0]
+                head = snake.getHead()
 
                 new_i = head["i"] + snake.di
                 new_j = head["j"] + snake.dj
@@ -179,7 +179,7 @@ class Game(Thread):
                     
                     continue
                     
-                pixel = self.map[int_new_i][int_new_j]
+                pixel = self.map.pixel(int_new_i, int_new_j)
                 
                 if (pixel["state"] == Cts.STATE_BUSY):
                     self.killSnake(snake)
@@ -195,7 +195,7 @@ class Game(Thread):
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
 
-                self.map[int(previous_i)][int(previous_j)]["state"] = Cts.STATE_EMPTY
+                self.map.pixel(int(previous_i), int(previous_j))["state"] = Cts.STATE_EMPTY
                 snake.can_move = True
 
                 if snake.grew:
