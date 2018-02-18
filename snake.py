@@ -37,7 +37,7 @@ class Snake():
 
     def increaseSize(self):
         self.pixels.insert(0, self.pixels[0].copy())
-        if (self.size < 127):
+        if (self.size < Cts.MAX_SNAKE_SIZE):
             self.size = self.size + 1
             self.grew = True
 

@@ -22,9 +22,9 @@ class Client():
         self.rankingChanged = (self.ranking != ranking)
         self.ranking = ranking
 
-    def sendMessage(self, message):
+    def sendMessage(self, message, binary=False):
         if not self.ws.closed:
-            self.ws.send(message)
+            self.ws.send(message, binary=binary)
 
     def close(self):
         if not self.ws.closed:
