@@ -72,8 +72,8 @@ class Game(Thread):
             c.rankingChanged = True
 
         snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
-        self.ranking.append(client)
         client.setSnake(snake)
+        self.ranking.append(client)
 
     def killSnake(self, snake):
         pixels = snake.pixels
@@ -158,7 +158,7 @@ class Game(Thread):
 
     def sendHead(self, client):
         head = client.snake.getHead()
-        client.sendMessage("".join([Cts.MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]))
+        client.sendMessage("".join([Cts.MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]), binary=True)
 
     def run(self):
         previous_time = 0
@@ -247,8 +247,11 @@ class Game(Thread):
 
                 # mobs
                 head = snake.getHead()
+                
+                # TODO: test if send message with type byte (b"") is more efficient
+                client.sendMessage(bytes, binary=True)
                 client.sendMessage("".join([Cts.MESSAGE_MOBS, chr(int(head["i"])),
-                        chr(int(head["j"])), messageMobs]))
+                        chr(int(head["j"])), messageMobs]), binary=True)
 
                 if snake.live:
                     # ranking
