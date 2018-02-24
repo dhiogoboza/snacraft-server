@@ -1,10 +1,8 @@
-STATE_EMPTY = 0
-STATE_BUSY = 1
+from constants import Constants as Cts
 
 class Snake():
 
-    def __init__(self, size, i, j, game_matrix, nickname):
-        self.nickname = nickname
+    def __init__(self, color, size, i, j, game_matrix):
         self.pixels = []
         self.live = True
         self.can_move = True
@@ -13,21 +11,19 @@ class Snake():
         self.di = -self.speed
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
-        self.ranking = 1
-        self.rankingChanged = True # initially no ranking is set
         self.receivedLeaderBoard = False # initially no one received leaderboard
 
         for c in range(i, i + size):
             self.pixels.append({
                     "i": c,
                     "j": j,
-                    "c": 2
+                    "c": color
                 })
-            game_matrix[c][j]["state"] = STATE_BUSY
+            game_matrix.pixel(c, j)["state"] = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            game_matrix[int(pixel["i"])][int(pixel["j"])]["state"] = STATE_EMPTY
+            game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))["state"] = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False
@@ -41,8 +37,9 @@ class Snake():
 
     def increaseSize(self):
         self.pixels.insert(0, self.pixels[0].copy())
-        self.size = self.size + 1
-        self.grew = True
+        if (self.size < Cts.MAX_SNAKE_SIZE):
+            self.size = self.size + 1
+            self.grew = True
 
     def walk(self, previous_i, previous_j):
         self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
@@ -92,7 +89,3 @@ class Snake():
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
                 self.can_move = False
-
-    def setRanking(self, ranking):
-        self.rankingChanged = (self.ranking != ranking)
-        self.ranking = ranking
