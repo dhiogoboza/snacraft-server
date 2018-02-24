@@ -140,8 +140,8 @@ class Game(Thread):
                 # swap
                 self.ranking[i], self.ranking[i - 1] = self.ranking[i - 1], self.ranking[i]
                 # update ranking
-                self.ranking[i].snake.setRanking(i + 1)
-                self.ranking[i - 1].snake.setRanking(i)
+                self.ranking[i].setRanking(i + 1)
+                self.ranking[i - 1].setRanking(i)
 
     def close(self):
         self.running = False
