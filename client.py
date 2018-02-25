@@ -17,7 +17,12 @@ class Client():
         
     def setId(self, client_id):
         self.id = client_id
-        
+        # Msg nickname [ ID | SIZE | NICKNAME ]
+        self.nickname = chr(self.id) + chr(len(self.nickname)) + self.nickname
+    
+    def setNickname(self, nickname):
+        self.nickname = nickname
+            
     def setRanking(self, ranking):
         self.rankingChanged = (self.ranking != ranking)
         self.ranking = ranking

@@ -27,3 +27,9 @@ class Constants:
     MESSAGE_RANKING = chr(5)
     MESSAGE_LEADERBOARD = chr(6)
     
+    """
+    Send players name, message:
+    [MSG_PLAYERS | P0_ID | P0_NAME_SIZE | P0_NAME | P1_ID | P1_NAME_SIZE | P1_NAME | ...]
+    """
+    MESSAGE_PLAYERS = chr(7)
+    

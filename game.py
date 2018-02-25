@@ -74,7 +74,21 @@ class Game(Thread):
         snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
         self.ranking.append(client)
-
+        
+        sendAllPlayers(client)
+    
+    def sendAllPlayers(self, client):
+        """
+        Send all players to a single client
+        """
+        players_list = ""
+        for client in self.clients:
+             players_list += client.nickname
+        
+        message = "".join([Cts.MESSAGE_PLAYERS, players_list])
+        client.sendMessage(message)
+        
+    
     def killSnake(self, snake):
         pixels = snake.pixels
         snake.kill()
