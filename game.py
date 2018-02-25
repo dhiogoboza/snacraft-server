@@ -53,7 +53,7 @@ class Game(Thread):
         return to_return
 
     def createSnake(self, client, color):
-        i = 10#int(self.lines / 2)
+        i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.clients)
 
         client_id = 0
