@@ -53,7 +53,7 @@ class Game(Thread):
         return to_return
 
     def createSnake(self, client, color):
-        i = int(self.lines / 2)
+        i = 10#int(self.lines / 2)
         j = int(self.columns / 2) + len(self.clients)
 
         client_id = 0
@@ -269,7 +269,7 @@ class Game(Thread):
                     # growth
                     if snake.grew:
                         snake.grew = False
-                        client.sendMessage("".join([Cts.MESSAGE_SNAKE_SIZE, chr(snake.size)]))
+                        client.sendMessage("".join([Cts.MESSAGE_SNAKE_SIZE, chr(snake.size)]), binary=True)
                 else:
                     # death
                     client.sendMessage(Cts.MESSAGE_DEATH)

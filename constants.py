@@ -1,5 +1,5 @@
 class Constants:
-    SNAKE_INITIAL_SIZE = 6
+    SNAKE_INITIAL_SIZE = 125
     SPEED_INCREMENT = 0.1
     MAX_SNAKE_SIZE = 200
     
