@@ -75,7 +75,7 @@ class Game(Thread):
         client.setSnake(snake)
         self.ranking.append(client)
         
-        sendAllPlayers(client)
+        self.sendAllPlayers(client)
     
     def sendAllPlayers(self, client):
         """
@@ -86,7 +86,8 @@ class Game(Thread):
              players_list += client.nickname
         
         message = "".join([Cts.MESSAGE_PLAYERS, players_list])
-        client.sendMessage(message)
+        print("message:", message)
+        client.sendMessage(message, binary=True)
         
     
     def killSnake(self, snake):
