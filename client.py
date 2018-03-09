@@ -24,7 +24,7 @@ class Client():
         self.nickname = nickname
             
     def setRanking(self, ranking):
-        self.rankingChanged = (self.ranking != ranking)
+        self.rankingChanged = True
         self.ranking = ranking
 
     def sendMessage(self, message, binary=False):
