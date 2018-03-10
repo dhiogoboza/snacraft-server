@@ -9,8 +9,9 @@ class Client():
         self.address = self.ws.environ['HTTP_SEC_WEBSOCKET_KEY']
         self.nickname = ''
         self.snake = None
-        self.ranking = 1
-        self.rankingChanged = True # initially no ranking is set
+        #self.leaderBoardUpdated = False
+        #self.ranking = 1
+        #self.rankingChanged = True # initially no ranking is set
         
     def setSnake(self, s):
         self.snake = s

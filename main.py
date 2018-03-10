@@ -49,7 +49,7 @@ def handle(ws):
     print(client.nickname, "connected")
 
     game.addClient(client, int(data_split[1]))
-    game.sendHead(client)
+    game.sendClientData(client)
 
     data_split = None
 
