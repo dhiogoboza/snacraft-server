@@ -20,10 +20,28 @@ class Constants:
 
     # Messages types
     MESSAGE_MAP = chr(0)
-    MESSAGE_HEAD = chr(1)
+    MESSAGE_CLIENT_DATA = chr(1)
     MESSAGE_MOBS = chr(2)
+    
+    # DEPRECATED
     MESSAGE_SNAKE_SIZE = chr(3)
+    
     MESSAGE_DEATH = chr(4)
+    
+    # DEPRECATED
     MESSAGE_RANKING = chr(5)
+    
+    # DEPRECATED
     MESSAGE_LEADERBOARD = chr(6)
+    
+    """
+    Send players name, message:
+    [MSG_PLAYERS | P0_ID | P0_NAME_SIZE | P0_NAME | P1_ID | P1_NAME_SIZE | P1_NAME | ...]
+    """
+    MESSAGE_PLAYERS = chr(7)
+    
+    """
+    Inform that a client left or died
+    """
+    MESSAGE_PLAYER_EXITED = chr(8)
     

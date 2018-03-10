@@ -1,7 +1,7 @@
 import os
 
 from game import Game
-from net import Client
+from client import Client
 
 from flask import Flask, render_template
 from flask_sockets import Sockets
@@ -40,15 +40,18 @@ def handle(ws):
     data = ws.receive()
     data_split = data.split(",")
     
-    client.nickname = data_split[0]
-    
-    if (len(client.nickname) > 15):
-        client.nickname = client.nickname[0:15]
+    data = data_split[0]
+    if (len(data) > 15):
+        data = data[0:15]
+        
+    client.setNickname(data)
     
     print(client.nickname, "connected")
 
     game.addClient(client, int(data_split[1]))
-    game.sendHead(client)
+    game.sendClientData(client)
+
+    data_split = None
 
     while not ws.closed:
         # handle incoming messages

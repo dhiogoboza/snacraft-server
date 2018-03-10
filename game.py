@@ -9,8 +9,6 @@ from constants import Constants as Cts
 class Game(Thread):
 
     def __init__(self, lines, columns, sleep_time):
-        Thread.__init__(self)
-
         self.thread_exit = False
         self.lines = lines
         self.columns = columns
@@ -18,8 +16,8 @@ class Game(Thread):
         self.running = True
         self.map = Map(lines, columns)
         self.clients = []
-        self.ranking = []
-        self.leaderBoard = ""
+        
+        Thread.__init__(self)
 
     def init(self):
         self.map.init()        
@@ -32,16 +30,13 @@ class Game(Thread):
             color = Cts.SNAKE_COLOR
     
         self.createSnake(client, color)
-        self.clients.append(client)
 
     def removeClient(self, client):
+        self.broadcastClientExited(client)
+        
         if (client in self.clients):
             self.clients.remove(client)
             client.snake.clear(self.map)
-            self.ranking.remove(client)
-
-            for c in self.clients:
-                c.rankingChanged = True
 
     def getMapStr(self):
         to_return = str(self.lines) + "," + str(self.columns)
@@ -57,31 +52,55 @@ class Game(Thread):
         j = int(self.columns / 2) + len(self.clients)
 
         client_id = 0
-        previous_id = -5
+        previous_id = 10
         
         for c in self.clients:
             if (c.id - previous_id > 1):
                 break
 
             previous_id = c.id
-            client_id = client_id + 1
+            client_id += 1
         
         client.setId(client_id)
-            
-        for c in self.clients:
-            c.rankingChanged = True
-
+        
         snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
-        self.ranking.append(client)
-
-    def killSnake(self, snake):
-        pixels = snake.pixels
-        snake.kill()
+        
+        self.clients.append(client)
+        self.sendAllPlayers(client)
+    
+    def sendAllPlayers(self, client):
+        """
+        Send all players to new client
+        """
+        
+        # message with all players to send to new client
+        players_list = ""
+        
+        # message to send to all clients
+        message = "".join([Cts.MESSAGE_PLAYERS, client.nickname])
+        
+        for c in self.clients:
+             players_list += c.nickname
+             if (c != client):
+                # send new player to all clients
+                c.sendMessage(message, binary=True)
+        
+        message = "".join([Cts.MESSAGE_PLAYERS, players_list])
+        
+        # send clients list
+        client.sendMessage(message, binary=True)
+        
+        for c in self.clients:
+            c.leaderBoardUpdated = False
+        
+    
+    def kill(self, client):
+        client.snake.kill()
 
         power_up_type = Cts.MOB_CORPSE[0]
 
-        for pixel in snake.pixels:
+        for pixel in client.snake.pixels:
             i, j = int(pixel['i']), int(pixel['j'])
 
             power_up = {}
@@ -95,11 +114,26 @@ class Game(Thread):
             self.map.animated_power_ups[key] = power_up
             self.map.pixel(i, j)["mob"] = power_up_type
             self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
+         
+        self.broadcastClientExited(client)
+        
+    def broadcastClientExited(self, client):
+        """
+        Inform clients that client exited
+        """
+        
+        message = "".join([Cts.MESSAGE_PLAYER_EXITED, chr(client.id)])
+        for c in self.clients:
+            # send message to all clients
+            c.sendMessage(message, binary=True)
 
     def getSnakes(self):
-        snakes = ""
+        # clients count
+        snakes = chr(len(self.clients))
+        
         for client in self.clients:
-            snakes = snakes + client.snake.getPixelsStr()
+            # CLIENT_ID | SNAKE_SIZE | PIXELS...
+            snakes += chr(client.id) + chr(client.snake.size) + client.snake.getPixelsStr()
 
         return snakes
 
@@ -134,14 +168,20 @@ class Game(Thread):
         
         pixel["mob"] = Cts.STATE_EMPTY
 
-    def recalculateRanking(self):
-        for i in range(1, len(self.ranking)):
-            if self.ranking[i].snake.size > self.ranking[i - 1].snake.size:
-                # swap
-                self.ranking[i], self.ranking[i - 1] = self.ranking[i - 1], self.ranking[i]
-                # update ranking
-                self.ranking[i].setRanking(i + 1)
-                self.ranking[i - 1].setRanking(i)
+    def recalculateRanking(self, client):
+        c_index = self.clients.index(client)
+        
+        if (c_index > 0):
+            # get client above
+            a_index = c_index - 1
+            
+            # check if current client snake passed the above snake
+            if (client.snake.size > self.clients[a_index].snake.size):
+                self.clients[c_index], self.clients[a_index] = self.clients[a_index], self.clients[c_index]
+                return True
+        
+        # ranking not changed
+        return False
 
     def close(self):
         self.running = False
@@ -156,15 +196,17 @@ class Game(Thread):
         self.clients.clear()
         self.map.power_ups.clear()
 
-    def sendHead(self, client):
+    def sendClientData(self, client):
         head = client.snake.getHead()
-        client.sendMessage("".join([Cts.MESSAGE_HEAD, chr(head["i"]), chr(head["j"])]), binary=True)
+        client.sendMessage("".join([Cts.MESSAGE_CLIENT_DATA,
+                chr(head["i"]), chr(head["j"]), chr(client.id)
+                ]), binary=True)
 
     def run(self):
         previous_time = 0
         cur_time = 0
         count = 0
-
+        
         while self.running:
             # randomize power ups items
             if (count == 10):
@@ -175,8 +217,7 @@ class Game(Thread):
                 count = 0
             else:
                 count = count + 1
-                
-            recalculateRanking = False
+
             for client in self.clients:
                 snake = client.snake
                 
@@ -202,7 +243,7 @@ class Game(Thread):
                 pixel = self.map.pixel(int_new_i, int_new_j)
                 
                 if (pixel["state"] == Cts.STATE_BUSY):
-                    self.killSnake(snake)
+                    self.kill(client)
                     continue
 
                 if not (pixel["mob"] == 0):
@@ -217,63 +258,16 @@ class Game(Thread):
 
                 self.map.pixel(int(previous_i), int(previous_j))["state"] = Cts.STATE_EMPTY
                 snake.can_move = True
-
-                if snake.grew:
-                    recalculateRanking = True
-
-                # snakes iteration end
-
-            if recalculateRanking:
-                self.recalculateRanking()
-
-            messageMobs = self.getSnakes() + self.map.getPowerUps()
-
-            leaderBoard = ""
-            for client in self.ranking[:10]:
-                leaderBoard = leaderBoard + str(client.nickname) + ','
-            leaderBoard = leaderBoard[:(len(leaderBoard) - 1)]
-
-            leaderBoardChanged = False
-
-            if self.leaderBoard != leaderBoard:
-                self.leaderBoard = leaderBoard
-                leaderBoardChanged = True
-                leaderBoardMessage = "".join([Cts.MESSAGE_LEADERBOARD, self.leaderBoard])
-
-            rankingLength = chr(len(self.ranking))
-
+                # clients iteration end
+            
+            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + self.map.getPowerUps()
+            
             for client in self.clients:
-                snake = client.snake
-
-                # mobs
-                head = snake.getHead()
-                
-                # TODO: test if send message with type byte (b"") is more efficient
-                client.sendMessage(bytes, binary=True)
-                client.sendMessage("".join([Cts.MESSAGE_MOBS, chr(int(head["i"])),
-                        chr(int(head["j"])), messageMobs]), binary=True)
-
-                if snake.live:
-                    # ranking
-                    if client.rankingChanged:
-                        client.rankingChanged = False
-                        client.sendMessage("".join([Cts.MESSAGE_RANKING,
-                                chr(client.ranking),
-                                rankingLength]))
-
-                    # leader board
-                    if leaderBoardChanged or not snake.receivedLeaderBoard:
-                        snake.receivedLeaderBoard = True
-                        client.sendMessage(leaderBoardMessage)
-
-                    # growth
-                    if snake.grew:
-                        snake.grew = False
-                        client.sendMessage("".join([Cts.MESSAGE_SNAKE_SIZE, chr(snake.size)]), binary=True)
-                else:
+                client.sendMessage(messageMobs, binary=True)
+                if not client.snake.live:
                     # death
                     client.sendMessage(Cts.MESSAGE_DEATH)
-
+            
             cur_time = time.time()
             elapsed_time = cur_time - previous_time
 

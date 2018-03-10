@@ -11,7 +11,6 @@ class Snake():
         self.di = -self.speed
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
-        self.receivedLeaderBoard = False # initially no one received leaderboard
 
         for c in range(i, i + size):
             self.pixels.append({
