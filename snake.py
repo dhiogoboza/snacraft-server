@@ -11,6 +11,7 @@ class Snake():
         self.di = -self.speed
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
+        self.color = color
 
         for c in range(i, i + size):
             self.pixels.append({
@@ -30,7 +31,7 @@ class Snake():
     def getPixelsStr(self):
         pixels_str = ""
         for pixel in self.pixels:
-            pixels_str = pixels_str + chr(int(pixel["i"])) + chr(int(pixel["j"])) + chr(int(pixel["c"]))
+            pixels_str = pixels_str + chr(int(pixel["i"])) + chr(int(pixel["j"]))
 
         return pixels_str
 
