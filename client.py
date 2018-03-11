@@ -9,9 +9,6 @@ class Client():
         self.address = self.ws.environ['HTTP_SEC_WEBSOCKET_KEY']
         self.nickname = ''
         self.snake = None
-        #self.leaderBoardUpdated = False
-        #self.ranking = 1
-        #self.rankingChanged = True # initially no ranking is set
         
     def setSnake(self, s):
         self.snake = s
@@ -23,10 +20,6 @@ class Client():
     
     def setNickname(self, nickname):
         self.nickname = nickname
-            
-    def setRanking(self, ranking):
-        self.rankingChanged = True
-        self.ranking = ranking
 
     def sendMessage(self, message, binary=False):
         if not self.ws.closed:

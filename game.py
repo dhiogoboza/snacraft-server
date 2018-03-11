@@ -51,15 +51,15 @@ class Game(Thread):
         i = int(self.lines / 2)
         j = int(self.columns / 2) + len(self.clients)
 
-        client_id = 0
-        previous_id = 10
+        client_id = 1
         
         for c in self.clients:
-            if (c.id - previous_id > 1):
+            if (c.id == client_id):
+                client_id += 1
+                
+                continue
+            else:
                 break
-
-            previous_id = c.id
-            client_id += 1
         
         client.setId(client_id)
         
@@ -78,10 +78,10 @@ class Game(Thread):
         players_list = ""
         
         # message to send to all clients
-        message = "".join([Cts.MESSAGE_PLAYERS, client.nickname])
+        message = "".join([Cts.MESSAGE_PLAYERS, client.nickname, chr(client.snake.color)])
         
         for c in self.clients:
-             players_list += c.nickname
+             players_list += c.nickname + chr(client.snake.color)
              if (c != client):
                 # send new player to all clients
                 c.sendMessage(message, binary=True)
@@ -90,10 +90,16 @@ class Game(Thread):
         
         # send clients list
         client.sendMessage(message, binary=True)
+    
+    def broadcastClientExited(self, client):
+        """
+        Inform clients that client exited
+        """
         
+        message = "".join([Cts.MESSAGE_PLAYER_EXITED, chr(client.id)])
         for c in self.clients:
-            c.leaderBoardUpdated = False
-        
+            # send message to all clients
+            c.sendMessage(message, binary=True)    
     
     def kill(self, client):
         client.snake.kill()
@@ -116,24 +122,15 @@ class Game(Thread):
             self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
          
         self.broadcastClientExited(client)
-        
-    def broadcastClientExited(self, client):
-        """
-        Inform clients that client exited
-        """
-        
-        message = "".join([Cts.MESSAGE_PLAYER_EXITED, chr(client.id)])
-        for c in self.clients:
-            # send message to all clients
-            c.sendMessage(message, binary=True)
 
     def getSnakes(self):
         # clients count
         snakes = chr(len(self.clients))
         
         for client in self.clients:
-            # CLIENT_ID | SNAKE_SIZE | PIXELS...
-            snakes += chr(client.id) + chr(client.snake.size) + client.snake.getPixelsStr()
+            # CLIENT_ID | SNAKE_COLOR | SNAKE_SIZE | PIXELS...
+            snk = client.snake
+            snakes += chr(client.id) + chr(snk.color) + chr(snk.size) + snk.getPixelsStr()
 
         return snakes
 
@@ -199,7 +196,7 @@ class Game(Thread):
     def sendClientData(self, client):
         head = client.snake.getHead()
         client.sendMessage("".join([Cts.MESSAGE_CLIENT_DATA,
-                chr(head["i"]), chr(head["j"]), chr(client.id)
+                chr(client.id), chr(client.snake.color), chr(head["i"]), chr(head["j"])
                 ]), binary=True)
 
     def run(self):
