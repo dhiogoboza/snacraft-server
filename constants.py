@@ -1,7 +1,7 @@
 class Constants:
     SNAKE_INITIAL_SIZE = 6
     SPEED_INCREMENT = 0.1
-    MAX_SNAKE_SIZE = 200
+    MAX_SNAKE_SIZE = 230
     
     STATE_EMPTY = 0
     STATE_BUSY = 1
