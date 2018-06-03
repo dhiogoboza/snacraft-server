@@ -41,8 +41,8 @@ def handle(ws):
     data_split = data.split(",")
     
     data = data_split[0]
-    if (len(data) > 15):
-        data = data[0:15]
+    if (len(data) > 10):
+        data = data[0:10]
         
     client.setNickname(data)
     
