@@ -3,6 +3,7 @@ import time
 
 from map import Map
 from snake import Snake
+from client import Client
 from threading import Thread
 from constants import Constants as Cts
 
@@ -21,10 +22,19 @@ class Game(Thread):
         Thread.__init__(self)
 
     def init(self):
-        self.map.init()        
+        self.map.init()
+        self.addBots(10)
     
     def sendMap(self, client):
         client.sendMessage(",".join([Cts.MESSAGE_MAP, self.map.getMapStr()]))
+
+    def addBots(self, count):
+        for i in range(0, count):
+            bot = Client(None, bot=True)
+            bot.setNickname("bot-" + str(i))
+            
+            # TODO: randomize bot skins
+            self.addClient(bot, 26)
 
     def addClient(self, client, color):
         if color < Cts.SNAKE_COLOR:
@@ -51,6 +61,7 @@ class Game(Thread):
         self.createSnake(client, color)
 
     def removeClient(self, client):
+        client.snake.kill()
         self.broadcastClientExited(client)
         
         if (client in self.clients):
@@ -103,7 +114,6 @@ class Game(Thread):
         """
         Inform clients that client exited
         """
-        
         message = "".join([Cts.MESSAGE_PLAYER_EXITED, chr(client.id)])
         for c in self.clients:
             # send message to all clients
@@ -128,7 +138,7 @@ class Game(Thread):
             self.map.animated_power_ups[key] = power_up
             self.map.pixel(i, j)["mob"] = power_up_type
             self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
-         
+        
         self.broadcastClientExited(client)
 
     def getSnakes(self):
@@ -272,6 +282,8 @@ class Game(Thread):
                 if not client.snake.live:
                     # death
                     client.sendMessage(Cts.MESSAGE_DEATH)
+                    client.close()
+                    self.clients.remove(client)
             
             cur_time = time.time()
             elapsed_time = cur_time - previous_time
