@@ -2,24 +2,19 @@ import os
 
 from game import Game
 from client import Client
+from botmanager import BotManager
+from constants import Constants as Cts
 
 from flask import Flask, render_template
 from flask_sockets import Sockets
 
-# game config
-LINES = 150
-COLUMNS = 150
-SLEEP_TIME = 0.100
+game = Game(Cts.LINES, Cts.COLUMNS, Cts.SLEEP_TIME)
+bot_manager = BotManager(game, Cts.MAX_BOTS, Cts.SLEEP_TIME * 5)
 
-game = None
+game.init(bot_manager)
+bot_manager.addBots(0)
 
-# init game
-columns = COLUMNS
-lines = LINES
-sleep_time = SLEEP_TIME
-
-game = Game(lines, columns, sleep_time)
-game.init()
+bot_manager.start()
 game.start()
 
 # init app

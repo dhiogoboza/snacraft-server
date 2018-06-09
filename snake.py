@@ -6,9 +6,10 @@ class Snake():
         self.pixels = []
         self.live = True
         self.can_move = True
-        self.speed = 0.5
+        self.speed = Cts.INITIAL_SPEED
         self.dj = 0
         self.di = -self.speed
+        self.direction = Cts.DIRECTION_UP
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
         self.color = color
@@ -54,38 +55,42 @@ class Snake():
     def getHead(self):
         return self.pixels[0]
     
-    def move(self, key):
+    def move(self, key, can_move=False):
         if not self.live or not self.can_move:
             return
 
         # KEY_UP
-        if key == "0":
+        if key == Cts.KEY_UP:
             if (self.di == 0):
                 self.dj = 0
                 self.pixels[0]["j"] = int(self.pixels[0]["j"])
                 self.di = -self.speed
-                self.can_move = False
+                self.can_move = can_move
+                self.direction = Cts.DIRECTION_UP
 
         # KEY_DOWN
-        elif key == "1":
+        elif key == Cts.KEY_DOWN:
             if (self.di == 0):
                 self.dj = 0
                 self.pixels[0]["j"] = int(self.pixels[0]["j"])
                 self.di = self.speed
-                self.can_move = False
+                self.can_move = can_move
+                self.direction = Cts.DIRECTION_DOWN
 
         # KEY_LEFT
-        elif key == "2":
+        elif key == Cts.KEY_LEFT:
             if (self.dj == 0):
                 self.dj = -self.speed
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
-                self.can_move = False
+                self.can_move = can_move
+                self.direction = Cts.DIRECTION_LEFT
 
         # KEY_RIGHT
-        elif key == "3":
+        elif key == Cts.KEY_RIGHT:
             if (self.dj == 0):
                 self.dj = self.speed
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
-                self.can_move = False
+                self.can_move = can_move
+                self.direction = Cts.DIRECTION_RIGHT

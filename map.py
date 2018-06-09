@@ -87,7 +87,7 @@ class Map():
             
     
     def drawWalls(self):
-        walls_width = 5
+        walls_width = Cts.WALLS_WIDTH
         lines_l = self.lines - walls_width
         columns_l = self.columns - walls_width
         for i in range(0, self.lines):
@@ -129,5 +129,10 @@ class Map():
         return i * self.columns + j
     
     def pixel(self, i, j):
+        if (i >= self.lines or j >= self.columns or i < 0 or j < 0):
+            pix = {}
+            pixel["state"] = Cts.STATE_BUSY
+            return pix
+            
         return self.matrix[i][j]
 

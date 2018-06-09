@@ -3,13 +3,13 @@ class Client():
     Wrapper client class of geventwebsocket.websocket.WebSocket to
     interface with Game class.
     """
-    def __init__(self, ws, bot=False):
+    def __init__(self, ws, bot=False, manager=None):
         self.ws = ws
         self.id = 0
-        #self.address = self.ws.environ['HTTP_SEC_WEBSOCKET_KEY']
         self.nickname = ''
         self.snake = None
         self.bot = bot
+        self.manager = manager
         
     def setSnake(self, s):
         self.snake = s
@@ -31,6 +31,7 @@ class Client():
 
     def close(self):
         if self.bot:
+            self.manager.removeBot(self)
             return
 
         if not self.ws.closed:
