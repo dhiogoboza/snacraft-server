@@ -43,7 +43,7 @@ class Constants:
     MOB_CORPSE = [19, 22]
     MOB_MOVE_SPEED = 23
     SNAKE_COLOR = 24
-
+    BOTS = [29, 32]
 
     # Messages types
     MESSAGE_MAP = chr(0)

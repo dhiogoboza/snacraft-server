@@ -46,7 +46,7 @@ class BotManager(Thread):
             bot.setNickname("bot-" + str(bot_id))
             
             # TODO: randomize bot skins
-            self.game.addClient(bot, 26)
+            self.game.addClient(bot, random.choice(Cts.BOTS))
             self.bots.append(bot)
             
             bot_id += 1
