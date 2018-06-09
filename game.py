@@ -96,7 +96,7 @@ class Game(Thread):
         message = "".join([Cts.MESSAGE_PLAYERS, client.nickname, chr(client.snake.color)])
         
         for c in self.clients:
-             players_list = "".join([players_list, c.nickname, chr(client.snake.color)])
+             players_list = "".join([players_list, c.nickname, chr(c.snake.color)])
              
              if (c != client):
                 # send new player to all clients
