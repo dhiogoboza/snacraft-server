@@ -10,7 +10,7 @@ class Map():
         self.animated_power_ups = {}
         self.lines = lines
         self.columns = columns
-        
+
     def init(self):
         # fill empty matrix
         for i in range(0, self.lines):
@@ -18,14 +18,14 @@ class Map():
             for j in range(0, self.columns):
                 line.append({"it": Cts.STATE_EMPTY, "state": Cts.STATE_EMPTY, "mob": Cts.STATE_EMPTY})
             self.matrix.append(line)
-        
+
         for i in range(0, 20):
             self.drawIsland()
-            
+
         self.drawWalls()
 
         minor = int((self.lines if self.lines < self.columns else self.columns) * 0.2)
-        
+
         for c in range(0, minor):
             for item in range(Cts.MOB_FOOD_ITEMS[0], Cts.MOB_FOOD_ITEMS[1]):
                 self.generateRandomPowerUp(Cts.MOB_INCREASE, item)
@@ -33,7 +33,7 @@ class Map():
         minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
         for c in range(0, int(minor * 0.2)):
             self.generateRandomPowerUp(Cts.MOB_MOVE_SPEED, Cts.MOB_MOVE_SPEED)
-            
+
     def generateRandomPowerUp(self, power_up_type, item):
         power_up = {}
 
@@ -57,9 +57,9 @@ class Map():
     def drawIsland(self):
         start_i = random.randrange(10, (self.lines / 2) - 20)
         start_j = random.randrange(10, (self.columns / 2) - 20)
-        
+
         q = random.randrange(0, 4)
-        
+
         if (q == 1):
             start_j = start_j + (self.columns / 2)
         elif (q == 2):
@@ -67,25 +67,24 @@ class Map():
             start_j = start_j + (self.columns / 2)
         elif (q == 3):
             start_i = start_i + (self.lines / 2)
-            
+
         size = random.randrange(5, 15)
-        
+
         end_i = start_i + size
         end_j = start_j + size
-        
+
         for i in range(start_i, end_i):
             for j in range(start_j, end_j):
                 current = self.matrix[i][j]
-                
+
                 if i == start_i or i == end_i - 1 or j == start_j or j == end_j - 1:
                     it = random.randrange(Cts.GRASS[0], Cts.GRASS[1])
                 else:
                     it = random.randrange(Cts.CLAY[0], Cts.CLAY[1])
-                    
+
                 current["it"] = it
                 current["state"] = Cts.STATE_BUSY
-            
-    
+
     def drawWalls(self):
         walls_width = Cts.WALLS_WIDTH
         lines_l = self.lines - walls_width
@@ -94,17 +93,17 @@ class Map():
             line = []
             for j in range(0, self.columns):
                 state = Cts.STATE_BUSY
-                
+
                 if i <= walls_width or j <= walls_width or i >= lines_l or j >= columns_l:
                     it = random.randrange(Cts.STONES[0], Cts.STONES[1])
                 else:
                     state = Cts.STATE_EMPTY
                     it = Cts.STATE_EMPTY
-                    
+
                 current = self.matrix[i][j]
                 current["it"] = it if it != Cts.STATE_EMPTY else current["it"]
                 current["state"] = state if state != Cts.STATE_EMPTY else current["state"]
-    
+
     def getMapStr(self):
         to_return = str(self.lines) + "," + str(self.columns)
 
@@ -113,26 +112,25 @@ class Map():
                 to_return = to_return + "," + str(self.matrix[i][j]["it"])
 
         return to_return
-    
+
     def getPowerUps(self):
         power_ups = ""
-        
+
         for k, power_up in self.power_ups.items():
             power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
-            
+
         for k, power_up in self.animated_power_ups.items():
             power_ups = power_ups + chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
         return power_ups
-    
+
     def getKey(self, i, j):
         return i * self.columns + j
-    
+
     def pixel(self, i, j):
         if (i >= self.lines or j >= self.columns or i < 0 or j < 0):
             pix = {}
             pixel["state"] = Cts.STATE_BUSY
             return pix
-            
-        return self.matrix[i][j]
 
+        return self.matrix[i][j]

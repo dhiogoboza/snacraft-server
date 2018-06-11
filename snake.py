@@ -45,16 +45,16 @@ class Snake():
     def walk(self, previous_i, previous_j):
         self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
         self.pixels[0]["j"], previous_j = previous_j, int(self.pixels[0]["j"])
-        
+
         for i in range(1, len(self.pixels)):
             self.pixels[i]["i"], previous_i = previous_i, self.pixels[i]["i"]
             self.pixels[i]["j"], previous_j = previous_j, self.pixels[i]["j"]
 
         return previous_i, previous_j
-    
+
     def getHead(self):
         return self.pixels[0]
-    
+
     def move(self, key, can_move=False):
         if not self.live or not self.can_move:
             return
