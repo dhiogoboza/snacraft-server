@@ -4,21 +4,22 @@ class Constants:
     COLUMNS = 150
     SLEEP_TIME = 0.100
     MAX_BOTS = 10
-    
+
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
     SPEED_INCREMENT = 0.1
     INITIAL_SPEED = 0.5
     MAX_SNAKE_SIZE = 230
-    
     MAX_PLAYERS = 255
-    
+
+    # States
     STATE_EMPTY = 0
     STATE_BUSY = 1
     MOB_INCREASE = 16
-    
+
+    # Bots
     PROBABILITY_BOT_MOVE = 80
-    
+
     # Map
     WALLS_WIDTH = 5
 
@@ -49,29 +50,24 @@ class Constants:
     MESSAGE_MAP = chr(0)
     MESSAGE_CLIENT_DATA = chr(1)
     MESSAGE_MOBS = chr(2)
-    
-    # DEPRECATED
-    MESSAGE_SNAKE_SIZE = chr(3)
-    
     MESSAGE_DEATH = chr(4)
-    
-    # DEPRECATED
-    MESSAGE_RANKING = chr(5)
-    
-    # DEPRECATED
-    MESSAGE_LEADERBOARD = chr(6)
-    
+
     """
     Send players name, message:
     [MSG_PLAYERS | P0_ID | P0_NAME_SIZE | P0_NAME | P1_ID | P1_NAME_SIZE | P1_NAME | ...]
     """
     MESSAGE_PLAYERS = chr(7)
-    
+
     """
     Inform that a client left or died
     """
     MESSAGE_PLAYER_EXITED = chr(8)
-    
+
+    """
+    Inform in game players count
+    """
+    MESSAGE_PLAYERS_SIZE = chr(9)
+
     @staticmethod
     def getDirectionStr(direction):
         if direction == Constants.DIRECTION_UP:
@@ -82,4 +78,3 @@ class Constants:
             return "RIGHT"
         elif direction == Constants.DIRECTION_LEFT:
             return "LEFT"
-    

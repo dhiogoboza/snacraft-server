@@ -28,20 +28,29 @@ sockets = Sockets(app)
 def handle(ws):
     # new client connected
     client = Client(ws)
-     
+    client.sendMessage("".join([Cts.MESSAGE_PLAYERS_SIZE, chr(len(game.clients))]), binary=True)
+
+    # FIXME: find a way to check here if client is still present
     game.sendMap(client)
 
     # wait for snake's data
     data = ws.receive()
+
+    if data == None:
+        ws.close()
+        return
+
     data_split = data.split(",")
-    
+
     data = data_split[0]
     if (len(data) > 10):
         data = data[0:10]
-        
+
     client.setNickname(data)
-    
-    print(client.nickname, "connected")
+
+    nickname = client.nickname
+
+    print(nickname, "connected")
 
     game.addClient(client, int(data_split[1]))
     game.sendClientData(client)
@@ -57,3 +66,5 @@ def handle(ws):
 
     # terminate connection
     game.removeClient(client)
+
+    print(nickname, "disconnected")
