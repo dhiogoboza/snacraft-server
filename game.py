@@ -73,8 +73,10 @@ class Game(Thread):
         return to_return
 
     def createSnake(self, client, color):
-        i = random.randint(Cts.WALLS_WIDTH + 3, self.lines - Cts.WALLS_WIDTH - 3)
-        j = random.randint(Cts.WALLS_WIDTH + 3, self.columns - Cts.WALLS_WIDTH - 3)
+        offset = 3 + Cts.SNAKE_INITIAL_SIZE + Cts.WALLS_WIDTH
+
+        i = random.randint(offset, self.lines - offset)
+        j = random.randint(offset, self.columns - offset)
 
         snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
