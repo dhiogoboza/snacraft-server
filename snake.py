@@ -20,7 +20,10 @@ class Snake():
                     "j": j,
                     "c": color
                 })
-            game_matrix.pixel(c, j)["state"] = Cts.STATE_BUSY
+            map_pixel = game_matrix.pixel(c, j)
+
+            if map_pixel["state"] == Cts.STATE_EMPTY:
+                game_matrix.pixel(c, j)["state"] = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:

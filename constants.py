@@ -43,6 +43,7 @@ class Constants:
     STONES = [1, 6]
     CLAY = [6, 11]
     GRASS = [11, 16]
+    MAX_OBSTACLE_TILE = GRASS[1]
     MOB_FOOD_ITEMS = [16, 19]
     MOB_CORPSE = [19, 22]
     MOB_MOVE_SPEED = 23

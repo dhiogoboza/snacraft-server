@@ -124,16 +124,17 @@ class Game(Thread):
             i, j = int(pixel['i']), int(pixel['j'])
             map_pixel = self.map.pixel(i, j)
 
-            power_up = {}
-            power_up["i"] = i
-            power_up["j"] = j
-            power_up["item"] = random.randint(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
-            power_up["type"] = power_up_type
+            if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
+                power_up = {}
+                power_up["i"] = i
+                power_up["j"] = j
+                power_up["item"] = random.randint(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
+                power_up["type"] = power_up_type
 
-            key = self.map.getKey(i, j)
-            self.map.animated_power_ups[key] = power_up
-            map_pixel["mob"] = power_up_type
-            map_pixel["state"] = Cts.STATE_EMPTY
+                key = self.map.getKey(i, j)
+                self.map.animated_power_ups[key] = power_up
+                map_pixel["mob"] = power_up_type
+                map_pixel["state"] = Cts.STATE_EMPTY
 
         self.broadcastClientExited(client)
         self.bot_manager.addBots(len(self.clients))
@@ -274,7 +275,10 @@ class Game(Thread):
                     # head off bot from obstacles
                     self.bot_manager.moveBot(client)
 
-                self.map.pixel(int(previous_i), int(previous_j))["state"] = Cts.STATE_EMPTY
+                map_pixel = self.map.pixel(int(previous_i), int(previous_j))
+
+                if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
+                    map_pixel["state"] = Cts.STATE_EMPTY
                 snake.can_move = True
                 # clients iteration end
 
