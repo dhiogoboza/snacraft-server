@@ -122,6 +122,7 @@ class Game(Thread):
 
         for pixel in client.snake.pixels:
             i, j = int(pixel['i']), int(pixel['j'])
+            map_pixel = self.map.pixel(i, j)
 
             power_up = {}
             power_up["i"] = i
@@ -130,10 +131,9 @@ class Game(Thread):
             power_up["type"] = power_up_type
 
             key = self.map.getKey(i, j)
-
             self.map.animated_power_ups[key] = power_up
-            self.map.pixel(i, j)["mob"] = power_up_type
-            self.map.pixel(i, j)["state"] = Cts.STATE_EMPTY
+            map_pixel["mob"] = power_up_type
+            map_pixel["state"] = Cts.STATE_EMPTY
 
         self.broadcastClientExited(client)
         self.bot_manager.addBots(len(self.clients))
