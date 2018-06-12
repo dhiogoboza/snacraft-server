@@ -71,6 +71,11 @@ class Constants:
     """
     MESSAGE_PLAYERS_SIZE = chr(9)
 
+    """
+    Sound id to be played by the client
+    """
+    MESSAGE_SOUND = chr(10)
+
     @staticmethod
     def getDirectionStr(direction):
         if direction == Constants.DIRECTION_UP:

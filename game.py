@@ -180,6 +180,7 @@ class Game(Thread):
             self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
             self.map.power_ups.pop(key)
 
+        client.sendMessage("".join([Cts.MESSAGE_SOUND, chr(power_up["item"])]), binary=True)
         pixel["mob"] = Cts.STATE_EMPTY
 
     def recalculateRanking(self, client):
