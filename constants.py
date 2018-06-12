@@ -19,6 +19,9 @@ class Constants:
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
+    BOTS = [29, 32]
+    # zombies, skeletons
+    BOTS_NICKS = {29: ["zomber", "snombie", "zombinake", "zom"], 32: ["snakeleton", "skelake", "toneike"]}
 
     # Map
     WALLS_WIDTH = 5
@@ -44,7 +47,6 @@ class Constants:
     MOB_CORPSE = [19, 22]
     MOB_MOVE_SPEED = 23
     SNAKE_COLOR = 24
-    BOTS = [29, 32]
 
     # Messages types
     MESSAGE_MAP = chr(0)

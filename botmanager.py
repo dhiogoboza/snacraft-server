@@ -37,15 +37,13 @@ class BotManager(Thread):
         if len(self.bots) + bots_to_add >= Cts.MAX_BOTS:
             bots_to_add = Cts.MAX_BOTS - len(self.bots)
 
-        bot_id = len(self.bots)
         for i in range(0, bots_to_add):
-            # TODO: randomize bot nicknames
+            bt = random.choice(Cts.BOTS)
             bot = Client(None, bot=True, manager=self)
-            bot.setNickname("bot-" + str(bot_id))
+            bot.setNickname("-".join([random.choice(Cts.BOTS_NICKS[bt]), str(random.randint(1000, 2000))]))
 
-            self.game.addClient(bot, random.choice(Cts.BOTS))
+            self.game.addClient(bot, bt)
             self.bots.append(bot)
-            bot_id += 1
 
     def close():
         self.running = False
