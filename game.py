@@ -149,9 +149,9 @@ class Game(Thread):
         snakes = chr(len(self.clients))
 
         for client in self.clients:
-            # CLIENT_ID | SNAKE_COLOR | SNAKE_SIZE | PIXELS...
+            # CLIENT_ID | SNAKE_COLOR | SNAKE_SIZE_MOST | SNAKE_SIZE_LESS | SNAKE_SPEED | PIXELS...
             snk = client.snake
-            snakes += chr(client.id) + chr(snk.color) + chr(snk.size) + snk.getPixelsStr()
+            snakes += chr(client.id) + chr(snk.color) + chr(snk.size >> 8) + chr(snk.size & 0xFF) + snk.getPixelsStr()
 
         return snakes
 
