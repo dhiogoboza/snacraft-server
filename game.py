@@ -83,6 +83,11 @@ class Game(Thread):
 
         self.clients.append(client)
         self.sendAllPlayers(client)
+        # notify speed
+        client.sendMessage("".join([
+            Cts.MESSAGE_PLAYER_SPEED,
+            chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+            binary=True)
 
     def sendAllPlayers(self, client):
         """
@@ -176,6 +181,12 @@ class Game(Thread):
 
             if snake.speed > 1:
                 snake.speed = 1
+            else:
+                # notify speed boost
+                client.sendMessage("".join([
+                    Cts.MESSAGE_PLAYER_SPEED,
+                    chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+                    binary=True)
 
             self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
             self.map.power_ups.pop(key)

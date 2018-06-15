@@ -9,7 +9,7 @@ class Constants:
     SNAKE_INITIAL_SIZE = 6
     SPEED_INCREMENT = 0.1
     INITIAL_SPEED = 0.5
-    MAX_SNAKE_SIZE = 230
+    MAX_SNAKE_SIZE = 9999
     MAX_PLAYERS = 255
 
     # States
@@ -75,6 +75,11 @@ class Constants:
     Sound id to be played by the client
     """
     MESSAGE_SOUND = chr(10)
+
+    """
+    Player speed information message type
+    """
+    MESSAGE_PLAYER_SPEED = chr(11)
 
     @staticmethod
     def getDirectionStr(direction):
