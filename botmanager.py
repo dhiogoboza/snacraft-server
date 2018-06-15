@@ -21,7 +21,8 @@ class BotManager(Thread):
         Thread.__init__(self)
 
     def removeBot(self, bot):
-        self.bots.remove(bot)
+        if (bot in self.bots):
+            self.bots.remove(bot)
 
     def addBots(self, players):
         if len(self.bots) >= Cts.MAX_BOTS:
@@ -74,9 +75,9 @@ class BotManager(Thread):
                 pix_right_busy = game_map.pixel(cur_i, cur_j + 1)["state"] == Cts.STATE_BUSY
                 pix_left_busy = game_map.pixel(cur_i, cur_j - 1)["state"] == Cts.STATE_BUSY
 
-                if pix_right_busy:                    
+                if pix_right_busy:
                     snake.move(Cts.KEY_LEFT)
-                elif pix_left_busy:                    
+                elif pix_left_busy:
                     snake.move(Cts.KEY_RIGHT)
                 else:
                     snake.move(Cts.KEY_RIGHT if random.randint(0, 1) == 1 else Cts.KEY_LEFT)
@@ -89,7 +90,7 @@ class BotManager(Thread):
                 elif pix_up_busy:
                     snake.move(Cts.KEY_DOWN)
                 else:
-                    snake.move(Cts.KEY_UP if random.randint(0, 1) == 1 else Cts.KEY_DOWN)  
+                    snake.move(Cts.KEY_UP if random.randint(0, 1) == 1 else Cts.KEY_DOWN)
 
     def run(self):
         # Randomize bots movements
@@ -120,7 +121,7 @@ class BotManager(Thread):
                         busy = game_map.pixel(cur_i, cur_j - 1)["state"] == Cts.STATE_BUSY
                     else:
                         busy = game_map.pixel(cur_i, cur_j + 1)["state"] == Cts.STATE_BUSY
-                    
+
                     if not busy:
                         bot.snake.move(str(movement))
 
