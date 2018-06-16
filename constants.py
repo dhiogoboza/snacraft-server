@@ -10,7 +10,7 @@ class Constants:
     SPEED_INCREMENT = 0.1
     INITIAL_SPEED = 0.5
     MAX_SNAKE_SIZE = 9999
-    MAX_PLAYERS = 255
+    MAX_PLAYERS = 256
 
     # States
     STATE_EMPTY = 0

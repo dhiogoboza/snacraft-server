@@ -24,6 +24,8 @@ class BotManager(Thread):
         if (bot in self.bots):
             self.bots.remove(bot)
 
+        self.game.releaseClientId(bot.id)
+
     def addBots(self, players):
         if len(self.bots) >= Cts.MAX_BOTS:
             return

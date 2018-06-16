@@ -17,7 +17,7 @@ class Game(Thread):
         self.running = True
         self.map = Map(lines, columns)
         self.clients = []
-        self.client_id = 0
+        self.client_ids = range(0, Cts.MAX_PLAYERS - 1) # fifo of available client_ids
 
         random.seed()
         Thread.__init__(self)
@@ -33,23 +33,12 @@ class Game(Thread):
         if color < Cts.SNAKE_COLOR:
             color = Cts.SNAKE_COLOR
 
-        self.client_id += 1
-        if (self.client_id > 255):
-            self.client_id = 0
-
-        for c in self.clients:
-            if (c.id == self.client_id):
-                self.client_id += 1
-            else:
-                # Found an available ID
-                break
-
-        if (self.client_id > 255):
-            # gonged: server is full
+        if (len(self.clients) > (Cts.MAX_PLAYERS - 1) or len(self.client_ids) == 0):
+            # server is full
             client.close()
             return
 
-        client.setId(self.client_id)
+        client.setId(self.client_ids.pop(0))
         self.createSnake(client, color)
 
     def removeClient(self, client):
@@ -59,6 +48,11 @@ class Game(Thread):
         if (client in self.clients):
             self.clients.remove(client)
             client.snake.clear(self.map)
+
+        self.releaseClientId(client.id)
+
+    def releaseClientId(self, client_id):
+        self.client_ids.append(client_id)
 
     def getMap(self):
         return self.map
