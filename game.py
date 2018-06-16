@@ -188,21 +188,6 @@ class Game(Thread):
         client.sendMessage("".join([Cts.MESSAGE_SOUND, chr(power_up["item"])]), binary=True)
         pixel["mob"] = Cts.STATE_EMPTY
 
-    def recalculateRanking(self, client):
-        c_index = self.clients.index(client)
-
-        if (c_index > 0):
-            # get client above
-            a_index = c_index - 1
-
-            # check if current client snake passed the above snake
-            if (client.snake.size > self.clients[a_index].snake.size):
-                self.clients[c_index], self.clients[a_index] = self.clients[a_index], self.clients[c_index]
-                return True
-
-        # ranking not changed
-        return False
-
     def close(self):
         self.running = False
 
@@ -226,6 +211,7 @@ class Game(Thread):
         previous_time = 0
         cur_time = 0
         count = 0
+        sort_count = 0
 
         while self.running:
             # randomize power ups items
@@ -287,6 +273,15 @@ class Game(Thread):
                     map_pixel["state"] = Cts.STATE_EMPTY
                 snake.can_move = True
                 # clients iteration end
+
+            # FIXME: find a better way to do this
+            if sort_count == 10:
+                sort_count = 0
+
+                # sort clients
+                self.clients.sort(key=lambda client: client.snake.size, reverse=True)
+            else:
+                sort_count += 1
 
             messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + self.map.getPowerUps()
 
