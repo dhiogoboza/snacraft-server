@@ -25,6 +25,7 @@ class Constants:
 
     # Map
     WALLS_WIDTH = 5
+    LOOPS_REMOVE_CORPSE = 10
 
     # Keys
     # TODO: client message to bytes

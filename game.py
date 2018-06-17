@@ -134,7 +134,7 @@ class Game(Thread):
                 power_up["j"] = j
                 power_up["item"] = random.randint(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
                 power_up["type"] = power_up_type
-                power_up["loop"] = 10
+                power_up["loop"] = Cts.LOOPS_REMOVE_CORPSE
 
                 key = self.map.getKey(i, j)
                 self.map.animated_power_ups[key] = power_up
