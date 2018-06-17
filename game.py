@@ -69,8 +69,13 @@ class Game(Thread):
     def createSnake(self, client, color):
         offset = 3 + Cts.SNAKE_INITIAL_SIZE + Cts.WALLS_WIDTH
 
-        i = random.randint(offset, self.lines - offset)
-        j = random.randint(offset, self.columns - offset)
+        while True:
+            i = random.randint(offset, self.lines - offset)
+            j = random.randint(offset, self.columns - offset)
+            map_pixel = self.map.pixel(i, j)
+
+            if map_pixel["mob"] == Cts.STATE_EMPTY and map_pixel["state"] == Cts.STATE_EMPTY:
+                break;
 
         snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
@@ -129,6 +134,7 @@ class Game(Thread):
                 power_up["j"] = j
                 power_up["item"] = random.randint(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
                 power_up["type"] = power_up_type
+                power_up["loop"] = 10
 
                 key = self.map.getKey(i, j)
                 self.map.animated_power_ups[key] = power_up
@@ -216,9 +222,19 @@ class Game(Thread):
         while self.running:
             # randomize power ups items
             if (count == 10):
+                index = 0
+                to_delete = []
                 for k, power_up in self.map.animated_power_ups.items():
                     if (power_up["type"] == Cts.MOB_CORPSE[0]):
                         power_up["item"] = random.randint(Cts.MOB_CORPSE[0], Cts.MOB_CORPSE[1])
+                    if power_up["loop"]:
+                        power_up["loop"] -= 1
+                        if not power_up["loop"]:
+                            # Remove corpse
+                            self.map.pixel(power_up["i"], power_up["j"])["mob"] = Cts.STATE_EMPTY
+                            to_delete.append(k)
+                for k in to_delete:
+                    self.map.animated_power_ups.pop(k)
                 count = 0
             else:
                 count = count + 1
