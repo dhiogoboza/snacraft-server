@@ -1,5 +1,5 @@
 import os
-
+import sys
 from game import Game
 from client import Client
 from botmanager import BotManager
@@ -7,6 +7,9 @@ from constants import Constants as Cts
 
 from flask import Flask, render_template
 from flask_sockets import Sockets
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 game = Game(Cts.LINES, Cts.COLUMNS, Cts.SLEEP_TIME)
 bot_manager = BotManager(game, Cts.MAX_BOTS, Cts.SLEEP_TIME * 5)
