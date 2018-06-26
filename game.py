@@ -287,6 +287,7 @@ class Game(Thread):
 
                 if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
                     map_pixel["state"] = Cts.STATE_EMPTY
+                    map_pixel["mob"] = Cts.STATE_EMPTY
                 snake.can_move = True
                 # clients iteration end
 
