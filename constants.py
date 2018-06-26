@@ -19,9 +19,9 @@ class Constants:
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
-    BOTS = [29, 32]
+    BOTS = [29, 32, 34]
     # zombies, skeletons
-    BOTS_NICKS = {29: ["zomber", "snombie", "zombinake", "zom"], 32: ["snakeleton", "skelake", "toneike"]}
+    BOTS_NICKS = {29: ["zomber", "snombie", "zombinake", "zom"], 32: ["snakeleton", "skelake", "toneike"], 34: ["spidernake", "snaker"]}
 
     # Map
     WALLS_WIDTH = 5
