@@ -57,15 +57,6 @@ class Game(Thread):
     def getMap(self):
         return self.map
 
-    def getMapStr(self):
-        to_return = str(self.lines) + "," + str(self.columns)
-
-        for i in range(0, self.lines):
-            for j in range(0, self.columns):
-                to_return = to_return + "," + str(self.map.pixel(i, j)["it"])
-
-        return to_return
-
     def createSnake(self, client, color):
         offset = 3 + Cts.SNAKE_INITIAL_SIZE + Cts.WALLS_WIDTH
 
