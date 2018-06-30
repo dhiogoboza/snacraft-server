@@ -279,6 +279,11 @@ class Game(Thread):
                 if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
                     map_pixel["state"] = Cts.STATE_EMPTY
                     map_pixel["mob"] = Cts.STATE_EMPTY
+                    key = self.map.getKey(int(previous_i), int(previous_j))
+                    if key in self.map.power_ups:
+                        pu = self.map.power_ups[key]
+                        self.map.generateRandomPowerUp(pu["type"], pu["item"])
+                        self.map.power_ups.pop(key)
                 snake.can_move = True
                 # clients iteration end
 
