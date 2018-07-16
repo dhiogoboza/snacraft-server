@@ -19,9 +19,9 @@ class Constants:
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
-    BOTS = [29, 32, 34]
+    BOTS = [30, 33, 35]
     # zombies, skeletons
-    BOTS_NICKS = {29: ["zomber", "snombie", "zombinake", "zom"], 32: ["snakeleton", "skelake", "toneike"], 34: ["spidernake", "snaker"]}
+    BOTS_NICKS = {BOTS[0]: ["zomber", "snombie", "zombinake", "zom"], BOTS[1]: ["snakeleton", "skelake", "toneike"], BOTS[2]: ["spidernake", "snaker"]}
 
     # Map
     WALLS_WIDTH = 5
@@ -45,10 +45,10 @@ class Constants:
     CLAY = [6, 11]
     GRASS = [11, 16]
     MAX_OBSTACLE_TILE = GRASS[1]
-    MOB_FOOD_ITEMS = [16, 19]
-    MOB_CORPSE = [19, 22]
-    MOB_MOVE_SPEED = 23
-    SNAKE_COLOR = 24
+    MOB_FOOD_ITEMS = [16, 20]
+    MOB_CORPSE = [20, 23]
+    MOB_MOVE_SPEED = 24
+    SNAKE_COLOR = 25
 
     # Messages types
     MESSAGE_MAP = chr(0)
