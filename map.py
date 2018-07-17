@@ -55,8 +55,8 @@ class Map():
         self.matrix[i][j]["mob"] = power_up_type
             
     def drawIsland(self):
-        start_i = random.randrange(10, (self.lines / 2) - 20)
-        start_j = random.randrange(10, (self.columns / 2) - 20)
+        start_i = random.randrange(5, (self.lines / 2) - 5)
+        start_j = random.randrange(5, (self.columns / 2) - 5)
 
         q = random.randrange(0, 4)
 
@@ -75,6 +75,8 @@ class Map():
 
         for i in range(start_i, end_i):
             for j in range(start_j, end_j):
+                if (len(self.matrix) <= i or len(self.matrix[i]) <= j):
+                    continue;
                 current = self.matrix[i][j]
 
                 if i == start_i or i == end_i - 1 or j == start_j or j == end_j - 1:

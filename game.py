@@ -296,7 +296,7 @@ class Game(Thread):
             else:
                 sort_count += 1
 
-            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + self.map.getPowerUps()
+            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes()# + self.map.getPowerUps()
 
             for client in self.clients:
                 client.sendMessage(messageMobs, binary=True)

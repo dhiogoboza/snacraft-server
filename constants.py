@@ -1,9 +1,11 @@
 class Constants:
     # Game config
-    LINES = 150
-    COLUMNS = 150
+    #LINES = 150
+    #COLUMNS = 150
+    LINES = 60
+    COLUMNS = 60
     SLEEP_TIME = 0.100
-    MAX_BOTS = 25
+    MAX_BOTS = 1
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
@@ -81,6 +83,9 @@ class Constants:
     Player speed information message type
     """
     MESSAGE_PLAYER_SPEED = chr(11)
+
+    
+    MESSAGE_DEATH = chr(4)
 
     @staticmethod
     def getDirectionStr(direction):
