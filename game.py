@@ -296,7 +296,7 @@ class Game(Thread):
             else:
                 sort_count += 1
 
-            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes()# + self.map.getPowerUps()
+            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + self.map.getPowerUps()
 
             for client in self.clients:
                 client.sendMessage(messageMobs, binary=True)
@@ -305,6 +305,8 @@ class Game(Thread):
                     client.sendMessage(Cts.MESSAGE_DEATH)
                     client.close()
                     self.clients.remove(client)
+                else:
+                    client.snake.checkMovement()
 
             cur_time = time.time()
             elapsed_time = cur_time - previous_time

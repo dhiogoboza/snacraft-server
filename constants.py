@@ -84,9 +84,6 @@ class Constants:
     """
     MESSAGE_PLAYER_SPEED = chr(11)
 
-    
-    MESSAGE_DEATH = chr(4)
-
     @staticmethod
     def getDirectionStr(direction):
         if direction == Constants.DIRECTION_UP:
