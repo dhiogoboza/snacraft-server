@@ -1,7 +1,7 @@
 from constants import Constants as Cts
 from Queue import *
 
-KEYS_MAX_BUFFER = 10
+KEYS_MAX_BUFFER = 3
 
 class Snake():
 
@@ -16,8 +16,9 @@ class Snake():
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
         self.color = color
-        self.keys_buffer = Queue(KEYS_MAX_BUFFER + 2)
+        self.keys_buffer = Queue()
         self.last_key = -1
+        self.moved = False
 
         for c in range(i, i + size):
             self.pixels.append({
@@ -71,10 +72,9 @@ class Snake():
         if not self.live:
             return
 
-        if key_to_add != self.last_key:
-            self.last_key = key_to_add
-            
-            if (self.keys_buffer.qsize() < KEYS_MAX_BUFFER):
+        if (self.keys_buffer.qsize() < KEYS_MAX_BUFFER):
+            if key_to_add != self.last_key:
+                self.last_key = key_to_add
                 self.keys_buffer.put(key_to_add)
                 if self.can_move:
                     self.doMovement(self.keys_buffer.get())

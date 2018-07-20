@@ -5,7 +5,7 @@ class Constants:
     LINES = 60
     COLUMNS = 60
     SLEEP_TIME = 0.100
-    MAX_BOTS = 1
+    MAX_BOTS = 0
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6

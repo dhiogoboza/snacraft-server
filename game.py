@@ -248,11 +248,14 @@ class Game(Thread):
                     # snake do not moved
                     head["i"] = new_i
                     head["j"] = new_j
+                    snake.moved = False
 
                     if client.bot:
                         # head off bot from obstacles
                         self.bot_manager.moveBot(client)
                     continue
+                else:
+                    snake.moved = True
 
                 pixel = self.map.pixel(int_new_i, int_new_j)
 
@@ -305,7 +308,7 @@ class Game(Thread):
                     client.sendMessage(Cts.MESSAGE_DEATH)
                     client.close()
                     self.clients.remove(client)
-                else:
+                elif client.snake.moved:
                     client.snake.checkMovement()
 
             cur_time = time.time()
