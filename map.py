@@ -53,6 +53,8 @@ class Map():
 
         self.power_ups[key] = power_up
         self.matrix[i][j]["mob"] = power_up_type
+
+        return chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
             
     def drawIsland(self):
         start_i = random.randrange(5, (self.lines / 2) - 5)

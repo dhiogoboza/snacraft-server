@@ -5,7 +5,7 @@ class Constants:
     LINES = 60
     COLUMNS = 60
     SLEEP_TIME = 0.100
-    MAX_BOTS = 0
+    MAX_BOTS = 5
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
@@ -18,6 +18,8 @@ class Constants:
     STATE_EMPTY = 0
     STATE_BUSY = 1
     MOB_INCREASE = 16
+
+    STATE_EMPTY_CHAR = chr(STATE_EMPTY)
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
