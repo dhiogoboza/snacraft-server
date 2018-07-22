@@ -2,16 +2,16 @@ class Constants:
     # Game config
     #LINES = 150
     #COLUMNS = 150
-    LINES = 60
-    COLUMNS = 60
+    LINES = 100
+    COLUMNS = 100
     SLEEP_TIME = 0.100
-    MAX_BOTS = 5
+    MAX_BOTS = 10
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
     SPEED_INCREMENT = 0.1
     INITIAL_SPEED = 0.5
-    MAX_SNAKE_SIZE = 9999
+    MAX_SNAKE_SIZE = 8000
     MAX_PLAYERS = 256
 
     # States
