@@ -72,7 +72,9 @@ class Snake():
         if not self.live:
             return
 
-        if (self.keys_buffer.qsize() < KEYS_MAX_BUFFER):
+        if self.keys_buffer.qsize() == 0:
+            self.doMovement(key_to_add)
+        elif (self.keys_buffer.qsize() < KEYS_MAX_BUFFER):
             if key_to_add != self.last_key:
                 self.last_key = key_to_add
                 self.keys_buffer.put(key_to_add)
