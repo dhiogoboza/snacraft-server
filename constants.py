@@ -44,6 +44,13 @@ class Constants:
     DIRECTION_LEFT = 2
     DIRECTION_RIGHT = 3
 
+    # Snake movementation
+    KEYS_MAX_BUFFER = 3
+    POSSIBLE_MOVEMENTS = {KEY_UP: {KEY_UP: False, KEY_DOWN: False, KEY_LEFT: True, KEY_RIGHT: True},
+                          KEY_DOWN: {KEY_UP: False, KEY_DOWN: False, KEY_LEFT: True, KEY_RIGHT: True},
+                          KEY_LEFT: {KEY_UP: True, KEY_DOWN: True, KEY_LEFT: False, KEY_RIGHT: False},
+                          KEY_RIGHT: {KEY_UP: True, KEY_DOWN: True, KEY_LEFT: False, KEY_RIGHT: False}}
+
     # Tiles contants
     STONES = [1, 6]
     CLAY = [6, 11]
@@ -85,6 +92,17 @@ class Constants:
     Player speed information message type
     """
     MESSAGE_PLAYER_SPEED = chr(11)
+
+    @staticmethod
+    def getKeyStr(key):
+        if key == Constants.KEY_UP:
+            return "UP"
+        elif key == Constants.KEY_DOWN:
+            return "DOWN"
+        elif key == Constants.KEY_RIGHT:
+            return "RIGHT"
+        elif key == Constants.KEY_LEFT:
+            return "LEFT"
 
     @staticmethod
     def getDirectionStr(direction):

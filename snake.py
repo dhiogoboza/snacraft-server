@@ -1,8 +1,6 @@
 from constants import Constants as Cts
 from Queue import *
 
-KEYS_MAX_BUFFER = 3
-
 class Snake():
 
     def __init__(self, color, size, i, j, game_matrix):
@@ -17,7 +15,7 @@ class Snake():
         self.grew = True # initially grew from nothing to something ;)
         self.color = color
         self.keys_buffer = Queue()
-        self.last_key = -1
+        self.last_key = Cts.KEY_UP
         self.moved = False
 
         for c in range(i, i + size):
@@ -73,13 +71,15 @@ class Snake():
             return
 
         if self.keys_buffer.qsize() == 0 and self.can_move:
+            self.last_key = key_to_add
             self.doMovement(key_to_add)
-        elif (self.keys_buffer.qsize() < KEYS_MAX_BUFFER):
-            if key_to_add != self.last_key:
+        elif (self.keys_buffer.qsize() < Cts.KEYS_MAX_BUFFER):
+            if key_to_add != self.last_key and Cts.POSSIBLE_MOVEMENTS[self.last_key][key_to_add]:
                 self.last_key = key_to_add
-                self.keys_buffer.put(key_to_add)
                 if self.can_move:
-                    self.doMovement(self.keys_buffer.get())
+                    self.doMovement(key_to_add)
+                else:
+                    self.keys_buffer.put(key_to_add)
 
     def doMovement(self, key):
         # KEY_UP
