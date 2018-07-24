@@ -1,0 +1,18 @@
+## snakes changes
+
+SC-MSG | SIZE | SNAKE0-ID | TYPE0 | ADD0-X | ADD0-Y | REMOVE0-X | REMOVE0-Y | SNAKE1-ID | TYPE1 | ADD1-X | ADD1-Y | REMOVE1-X | REMOVE1-Y
+
+TYPE {
+    0 - ADD
+    1 - REMOVE
+    2 - ADD AND REMOVE
+}
+
+## mobs changes
+
+MC-MSG | SIZE | TYPE0 | TARGET0-X | TARGET0-Y | TYPE1 | TARGET1-X | TARGET1-Y
+
+TYPE {
+    0 - ADD
+    1 - REMOVE
+}

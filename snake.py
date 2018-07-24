@@ -1,4 +1,5 @@
 from constants import Constants as Cts
+from Queue import *
 
 class Snake():
 
@@ -13,6 +14,9 @@ class Snake():
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
         self.color = color
+        self.keys_buffer = Queue()
+        self.last_key = Cts.KEY_UP
+        self.moved = False
 
         for c in range(i, i + size):
             self.pixels.append({
@@ -58,17 +62,33 @@ class Snake():
     def getHead(self):
         return self.pixels[0]
 
-    def move(self, key, can_move=False):
-        if not self.live or not self.can_move:
+    def checkMovement(self):
+        if not self.keys_buffer.empty():
+            self.doMovement(self.keys_buffer.get())
+
+    def move(self, key_to_add):
+        if not self.live:
             return
 
+        if self.keys_buffer.qsize() == 0 and self.can_move:
+            self.last_key = key_to_add
+            self.doMovement(key_to_add)
+        elif (self.keys_buffer.qsize() < Cts.KEYS_MAX_BUFFER):
+            if key_to_add != self.last_key and Cts.POSSIBLE_MOVEMENTS[self.last_key][key_to_add]:
+                self.last_key = key_to_add
+                if self.can_move:
+                    self.doMovement(key_to_add)
+                else:
+                    self.keys_buffer.put(key_to_add)
+
+    def doMovement(self, key):
         # KEY_UP
         if key == Cts.KEY_UP:
             if (self.di == 0):
                 self.dj = 0
                 self.pixels[0]["j"] = int(self.pixels[0]["j"])
                 self.di = -self.speed
-                self.can_move = can_move
+                self.can_move = False
                 self.direction = Cts.DIRECTION_UP
 
         # KEY_DOWN
@@ -77,7 +97,7 @@ class Snake():
                 self.dj = 0
                 self.pixels[0]["j"] = int(self.pixels[0]["j"])
                 self.di = self.speed
-                self.can_move = can_move
+                self.can_move = False
                 self.direction = Cts.DIRECTION_DOWN
 
         # KEY_LEFT
@@ -86,7 +106,7 @@ class Snake():
                 self.dj = -self.speed
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
-                self.can_move = can_move
+                self.can_move = False
                 self.direction = Cts.DIRECTION_LEFT
 
         # KEY_RIGHT
@@ -95,5 +115,5 @@ class Snake():
                 self.dj = self.speed
                 self.di = 0
                 self.pixels[0]["i"] = int(self.pixels[0]["i"])
-                self.can_move = can_move
+                self.can_move = False
                 self.direction = Cts.DIRECTION_RIGHT

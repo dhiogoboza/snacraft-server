@@ -1,21 +1,25 @@
 class Constants:
     # Game config
-    LINES = 150
-    COLUMNS = 150
+    #LINES = 150
+    #COLUMNS = 150
+    LINES = 100
+    COLUMNS = 100
     SLEEP_TIME = 0.100
-    MAX_BOTS = 25
+    MAX_BOTS = 10
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
     SPEED_INCREMENT = 0.1
     INITIAL_SPEED = 0.5
-    MAX_SNAKE_SIZE = 9999
+    MAX_SNAKE_SIZE = 8000
     MAX_PLAYERS = 256
 
     # States
     STATE_EMPTY = 0
     STATE_BUSY = 1
     MOB_INCREASE = 16
+
+    STATE_EMPTY_CHAR = chr(STATE_EMPTY)
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
@@ -39,6 +43,13 @@ class Constants:
     DIRECTION_DOWN = 1
     DIRECTION_LEFT = 2
     DIRECTION_RIGHT = 3
+
+    # Snake movementation
+    KEYS_MAX_BUFFER = 3
+    POSSIBLE_MOVEMENTS = {KEY_UP: {KEY_UP: False, KEY_DOWN: False, KEY_LEFT: True, KEY_RIGHT: True},
+                          KEY_DOWN: {KEY_UP: False, KEY_DOWN: False, KEY_LEFT: True, KEY_RIGHT: True},
+                          KEY_LEFT: {KEY_UP: True, KEY_DOWN: True, KEY_LEFT: False, KEY_RIGHT: False},
+                          KEY_RIGHT: {KEY_UP: True, KEY_DOWN: True, KEY_LEFT: False, KEY_RIGHT: False}}
 
     # Tiles contants
     STONES = [1, 6]
@@ -81,6 +92,17 @@ class Constants:
     Player speed information message type
     """
     MESSAGE_PLAYER_SPEED = chr(11)
+
+    @staticmethod
+    def getKeyStr(key):
+        if key == Constants.KEY_UP:
+            return "UP"
+        elif key == Constants.KEY_DOWN:
+            return "DOWN"
+        elif key == Constants.KEY_RIGHT:
+            return "RIGHT"
+        elif key == Constants.KEY_LEFT:
+            return "LEFT"
 
     @staticmethod
     def getDirectionStr(direction):
