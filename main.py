@@ -20,7 +20,7 @@ bot_manager.addBots(0)
 bot_manager.start()
 game.start()
 
-# init app
+# init websocket app
 app = Flask(__name__)
 app.debug = 'DEBUG' in os.environ
 
@@ -71,3 +71,11 @@ def handle(ws):
     game.removeClient(client)
 
     print(nickname, "disconnected")
+
+# init http app
+app_http = Flask(__name__)
+
+@app_http.route('/stats')
+def index():
+    return "deu certo!!"
+app_http.run(host='0.0.0.0',port=9000)
