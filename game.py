@@ -68,7 +68,7 @@ class Game(Thread):
             if map_pixel["mob"] == Cts.STATE_EMPTY and map_pixel["state"] == Cts.STATE_EMPTY:
                 break;
 
-        snake = Snake(color, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
+        snake = Snake(color, client.id, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
 
         self.clients.append(client)
@@ -133,6 +133,7 @@ class Game(Thread):
                 self.map.animated_power_ups[key] = power_up
                 map_pixel["mob"] = power_up_type
                 map_pixel["state"] = Cts.STATE_EMPTY
+                map_pixel["client"] = Cts.STATE_EMPTY
 
                 power_ups_generated_message += chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
@@ -282,7 +283,7 @@ class Game(Thread):
 
                 pixel = self.map.pixel(int_new_i, int_new_j)
 
-                if pixel["state"] == Cts.STATE_BUSY:
+                if pixel["state"] == Cts.STATE_BUSY and pixel["client"] != client.id:
                     messageMobsChange += self.kill(client)
                     continue
 
@@ -293,6 +294,7 @@ class Game(Thread):
                 previous_j = new_j
 
                 pixel["state"] = Cts.STATE_BUSY
+                pixel["client"] = client.id
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
 
@@ -305,6 +307,7 @@ class Game(Thread):
                 if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
                     map_pixel["state"] = Cts.STATE_EMPTY
                     map_pixel["mob"] = Cts.STATE_EMPTY
+                    map_pixel["client"] = Cts.STATE_EMPTY
                     key = self.map.getKey(int(previous_i), int(previous_j))
                     if key in self.map.power_ups:
                         pu = self.map.power_ups[key]
@@ -322,7 +325,6 @@ class Game(Thread):
             else:
                 sort_count += 1
 
-            #messageMobs = Cts.MESSAGE_MOBS + self.getSnakes()# + self.map.getPowerUps()
             messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + messageMobsChange
             messageSnakesChange = ""
             messageMobsChange = ""

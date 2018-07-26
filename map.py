@@ -16,7 +16,7 @@ class Map():
         for i in range(0, self.lines):
             line = []
             for j in range(0, self.columns):
-                line.append({"it": Cts.STATE_EMPTY, "state": Cts.STATE_EMPTY, "mob": Cts.STATE_EMPTY})
+                line.append({"it": Cts.STATE_EMPTY, "state": Cts.STATE_EMPTY, "mob": Cts.STATE_EMPTY, "client": 0})
             self.matrix.append(line)
 
         for i in range(0, 20):
@@ -134,7 +134,10 @@ class Map():
     def pixel(self, i, j):
         if (i >= self.lines or j >= self.columns or i < 0 or j < 0):
             pix = {}
-            pixel["state"] = Cts.STATE_BUSY
+            pix["state"] = Cts.STATE_BUSY
+            pix["mob"] = Cts.STATE_EMPTY
+            pix["client"] = Cts.STATE_EMPTY
+            map_pixel["it"] = Cts.STATE_EMPTY
             return pix
 
         return self.matrix[i][j]

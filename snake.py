@@ -3,7 +3,7 @@ from Queue import *
 
 class Snake():
 
-    def __init__(self, color, size, i, j, game_matrix):
+    def __init__(self, color, client_id, size, i, j, game_matrix):
         self.pixels = []
         self.live = True
         self.can_move = True
@@ -18,30 +18,34 @@ class Snake():
         self.last_key = Cts.KEY_UP
         self.moved = False
 
+
         for c in range(i, i + size):
             self.pixels.append({
                     "i": c,
                     "j": j,
                     "c": color
                 })
-            map_pixel = game_matrix.pixel(c, j)
 
+            map_pixel = game_matrix.pixel(c, j)
             if map_pixel["state"] == Cts.STATE_EMPTY:
-                game_matrix.pixel(c, j)["state"] = Cts.STATE_BUSY
+                map_pixel["client"] = client_id
+                map_pixel["state"] = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))["state"] = Cts.STATE_EMPTY
+            pix = game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))
+            pix["state"] = pix["client"] = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False
 
     def getPixelsStr(self):
-        pixels_str = ""
+        pixels_str = []
         for pixel in self.pixels:
-            pixels_str = pixels_str + chr(int(pixel["i"])) + chr(int(pixel["j"]))
+            pixels_str.append(chr(int(pixel["i"])))
+            pixels_str.append(chr(int(pixel["j"])))
 
-        return pixels_str
+        return "".join(pixels_str)
 
     def increaseSize(self):
         if (self.size < Cts.MAX_SNAKE_SIZE):
