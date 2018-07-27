@@ -137,7 +137,7 @@ class Map():
             pix["state"] = Cts.STATE_BUSY
             pix["mob"] = Cts.STATE_EMPTY
             pix["client"] = Cts.STATE_EMPTY
-            map_pixel["it"] = Cts.STATE_EMPTY
+            pix["it"] = Cts.STATE_EMPTY
             return pix
 
         return self.matrix[i][j]

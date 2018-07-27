@@ -70,7 +70,7 @@ class BotManager(Thread):
             return
 
         pixel = game_map.pixel(int_new_i, int_new_j)
-        if (pixel["state"] == Cts.STATE_BUSY and pixel["client"] != bot.id):
+        if pixel["state"] == Cts.STATE_BUSY and pixel["client"] != bot.id:
             # if pixel is busy change direction
             if snake.direction == Cts.DIRECTION_UP or snake.direction == Cts.DIRECTION_DOWN:
                 pix_right = game_map.pixel(cur_i, cur_j + 1)
@@ -85,7 +85,7 @@ class BotManager(Thread):
                     snake.move(Cts.KEY_RIGHT)
                 else:
                     snake.move(Cts.KEY_RIGHT if random.randint(0, 1) == 1 else Cts.KEY_LEFT)
-            elif:
+            else:
                 pix_down = game_map.pixel(cur_i + 1, cur_j)
                 pix_up = game_map.pixel(cur_i - 1, cur_j)
 

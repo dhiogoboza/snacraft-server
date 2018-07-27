@@ -17,7 +17,7 @@ class Game(Thread):
         self.running = True
         self.map = Map(lines, columns)
         self.clients = []
-        self.client_ids = range(0, Cts.MAX_PLAYERS - 1) # fifo of available client_ids
+        self.client_ids = range(1, Cts.MAX_PLAYERS - 1) # fifo of available client_ids
 
         random.seed()
         Thread.__init__(self)
