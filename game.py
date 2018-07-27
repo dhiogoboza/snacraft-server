@@ -144,15 +144,15 @@ class Game(Thread):
 
     def getSnakes(self):
         # clients count
-        snakes = chr(len(self.clients))
+        snakes = [chr(len(self.clients))]
 
         for client in self.clients:
             # CLIENT_ID | SNAKE_COLOR | SNAKE_SIZE_MOST | SNAKE_SIZE_LESS | SNAKE_SPEED | PIXELS...
             snk = client.snake
             # FIXME: cache this message in snake
-            snakes += chr(client.id) + chr(snk.color) + chr(snk.size >> 8) + chr(snk.size & 0xFF) + snk.getPixelsStr()
+            snakes.append(snk.getPixelsStr())
 
-        return snakes
+        return "".join(snakes)
 
     def moveSnake(self, client, key):
         client.snake.move(key)
