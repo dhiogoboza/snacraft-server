@@ -3,6 +3,7 @@ import time
 
 from map import Map
 from snake import Snake
+from snakebot import SnakeBot
 from client import Client
 from threading import Thread
 from constants import Constants as Cts
@@ -68,7 +69,10 @@ class Game(Thread):
             if map_pixel["mob"] == Cts.STATE_EMPTY and map_pixel["state"] == Cts.STATE_EMPTY:
                 break;
 
-        snake = Snake(color, client.id, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
+        if client.bot:
+            snake = SnakeBot(color, client.id, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
+        else:
+            snake = Snake(color, client.id, Cts.SNAKE_INITIAL_SIZE, i, j, self.map)
         client.setSnake(snake)
 
         self.clients.append(client)
@@ -84,9 +88,6 @@ class Game(Thread):
         Send all players to new client
         """
         # Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
-        # message with all players to send to new client
-        players_list = Cts.MESSAGE_PLAYERS
-
         # Message with all players to send to new client
         players_list = Cts.MESSAGE_PLAYERS
 

@@ -17,11 +17,10 @@ class Snake():
         self.keys_buffer = Queue()
         self.last_key = Cts.KEY_UP
         self.moved = False
-        self.client_id = client_id
         self.pixels_str = ""
         self.snake_data_str = ""
         self.snake_body_str = ""
-        self.snake_data_array = [chr(self.client_id), chr(self.color), 0, 0]
+        self.snake_data_array = [chr(client_id), chr(self.color), 0, 0]
         self.snake_body_arr = []
 
         for c in range(i, i + size):

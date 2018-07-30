@@ -1,11 +1,9 @@
 class Constants:
     # Game config
-    #LINES = 150
-    #COLUMNS = 150
     LINES = 100
     COLUMNS = 100
     SLEEP_TIME = 0.100
-    MAX_BOTS = 10
+    MAX_BOTS = 15
 
     # Snakes config
     SNAKE_INITIAL_SIZE = 6
@@ -23,9 +21,18 @@ class Constants:
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
-    BOTS = [30, 33, 35]
+    BOTS = [25, 26, 27, 28, 29, 30, 33, 35]
     # zombies, skeletons
-    BOTS_NICKS = {BOTS[0]: ["zomber", "snombie", "zombinake", "zom"], BOTS[1]: ["snakeleton", "skelake", "toneike"], BOTS[2]: ["spidernake", "snaker"]}
+    BOTS_NICKS = {
+            BOTS[0]: ["zeitgeist*", "bugHunter*", "ant*"],
+            BOTS[1]: ["inox*", "aisea*", "kereteki*"],
+            BOTS[2]: ["guenabi*", "matroska*", "vlad*"],
+            BOTS[3]: ["putin*", "dimitri*", "yuri*"],
+            BOTS[4]: ["nina*", "ivan*", "maru*", "maui*"],
+            BOTS[5]: [""],
+            BOTS[6]: [""],
+            BOTS[7]: [""]
+    }
 
     # Map
     WALLS_WIDTH = 5

@@ -43,7 +43,11 @@ class BotManager(Thread):
         for i in range(0, bots_to_add):
             bt = random.choice(Cts.BOTS)
             bot = Client(None, bot=True, manager=self)
-            bot.setNickname("-".join([random.choice(Cts.BOTS_NICKS[bt]), str(random.randint(1, 99))]))
+            bot_name = random.choice(Cts.BOTS_NICKS[bt])
+            if bot_name.endswith("*"):
+                bot.setNickname(bot_name[0:-1])
+            elif len(bot_name):
+                bot.setNickname("-".join([bot_name, str(random.randint(1, 99))]))
 
             self.game.addClient(bot, bt)
             self.bots.append(bot)
