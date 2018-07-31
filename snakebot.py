@@ -12,4 +12,5 @@ class SnakeBot(Snake):
         pass
 
     def move(self, key_to_add):
-        self.doMovement(key_to_add)
+        if self.can_move:
+            self.doMovement(key_to_add)

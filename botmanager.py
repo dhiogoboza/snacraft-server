@@ -14,6 +14,8 @@ class BotManager(Thread):
         self.game = game
         self.max_bots = max_bots
         self.bots = []
+        self.monsters_bots = 0
+        self.players_bots = 0
         self.running = True
         self.sleep_time = sleep_time
 
@@ -23,6 +25,10 @@ class BotManager(Thread):
     def removeBot(self, bot):
         if (bot in self.bots):
             self.bots.remove(bot)
+            if bot.monster:
+                self.monsters_bots -= 1
+            else:
+                self.players_bots -= 1
 
         self.game.releaseClientId(bot.id)
 
@@ -41,8 +47,15 @@ class BotManager(Thread):
             bots_to_add = Cts.MAX_BOTS - len(self.bots)
 
         for i in range(0, bots_to_add):
-            bt = random.choice(Cts.BOTS)
-            bot = Client(None, bot=True, manager=self)
+            if self.monsters_bots > self.players_bots:
+                bt = random.choice(Cts.BOTS_PLAYERS)
+                monster = False
+                self.players_bots += 1
+            else:
+                bt = random.choice(Cts.BOTS_MONSTERS)
+                monster = True
+                self.monsters_bots += 1
+            bot = Client(None, bot=True, monster=monster, manager=self)
             bot_name = random.choice(Cts.BOTS_NICKS[bt])
             if bot_name.endswith("*"):
                 bot.setNickname(bot_name[0:-1])
@@ -74,14 +87,14 @@ class BotManager(Thread):
             return
 
         pixel = game_map.pixel(int_new_i, int_new_j)
-        if pixel["state"] == Cts.STATE_BUSY and pixel["client"] != bot.id:
+        if pixel["state"] != Cts.STATE_EMPTY and pixel["client"] != bot.id:
             # if pixel is busy change direction
             if snake.direction == Cts.DIRECTION_UP or snake.direction == Cts.DIRECTION_DOWN:
                 pix_right = game_map.pixel(cur_i, cur_j + 1)
                 pix_left = game_map.pixel(cur_i, cur_j - 1)
 
-                pix_right_busy = pix_right["state"] == Cts.STATE_BUSY and pix_right["client"] != bot.id
-                pix_left_busy = pix_left["state"] == Cts.STATE_BUSY and pix_left["client"] != bot.id
+                pix_right_busy = pix_right["state"] != Cts.STATE_EMPTY and pix_right["client"] != bot.id
+                pix_left_busy = pix_left["state"] != Cts.STATE_EMPTY and pix_left["client"] != bot.id
 
                 if pix_right_busy:
                     snake.move(Cts.KEY_LEFT)
@@ -93,8 +106,8 @@ class BotManager(Thread):
                 pix_down = game_map.pixel(cur_i + 1, cur_j)
                 pix_up = game_map.pixel(cur_i - 1, cur_j)
 
-                pix_down_busy = pix_down["state"] == Cts.STATE_BUSY and pix_down["client"] != bot.id
-                pix_up_busy = pix_up["state"] == Cts.STATE_BUSY and pix_up["client"] != bot.id
+                pix_down_busy = pix_down["state"] != Cts.STATE_EMPTY and pix_down["client"] != bot.id
+                pix_up_busy = pix_up["state"] != Cts.STATE_EMPTY and pix_up["client"] != bot.id
 
                 if pix_down_busy:
                     snake.move(Cts.KEY_UP)
@@ -134,7 +147,7 @@ class BotManager(Thread):
                     else:
                         pix = game_map.pixel(cur_i, cur_j + 1)
 
-                    busy = pix["state"] == Cts.STATE_BUSY and pix["client"] != bot.id
+                    busy = pix["state"] != Cts.STATE_EMPTY and pix["client"] != bot.id
                     if not busy:
                         bot.snake.move(str(movement))
 

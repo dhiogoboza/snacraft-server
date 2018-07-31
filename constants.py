@@ -21,17 +21,18 @@ class Constants:
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
-    BOTS = [25, 26, 27, 28, 29, 30, 33, 35]
+    BOTS_PLAYERS = [25, 26, 27, 28, 29]
+    BOTS_MONSTERS = [30, 33, 35]
     # zombies, skeletons
     BOTS_NICKS = {
-            BOTS[0]: ["zeitgeist*", "bugHunter*", "ant*"],
-            BOTS[1]: ["inox*", "aisea*", "kereteki*"],
-            BOTS[2]: ["guenabi*", "matroska*", "vlad*"],
-            BOTS[3]: ["putin*", "dimitri*", "yuri*"],
-            BOTS[4]: ["nina*", "ivan*", "maru*", "maui*"],
-            BOTS[5]: [""],
-            BOTS[6]: [""],
-            BOTS[7]: [""]
+            BOTS_PLAYERS[0]: ["zeitgeist*", "bugHunter*", "ant*"],
+            BOTS_PLAYERS[1]: ["inox*", "aisea*", "kereteki*"],
+            BOTS_PLAYERS[2]: ["guenabi*", "matroska*", "vlad*"],
+            BOTS_PLAYERS[3]: ["putin*", "dimitri*", "yuri*"],
+            BOTS_PLAYERS[4]: ["nina*", "ivan*", "maru*", "maui*"],
+            BOTS_MONSTERS[0]: [""],
+            BOTS_MONSTERS[1]: [""],
+            BOTS_MONSTERS[2]: [""]
     }
 
     # Map

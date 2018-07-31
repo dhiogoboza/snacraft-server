@@ -284,7 +284,7 @@ class Game(Thread):
 
                 pixel = self.map.pixel(int_new_i, int_new_j)
 
-                if pixel["state"] == Cts.STATE_BUSY and pixel["client"] != client.id:
+                if pixel["state"] != Cts.STATE_EMPTY and pixel["client"] != client.id:
                     messageMobsChange += self.kill(client)
                     continue
 
@@ -294,7 +294,7 @@ class Game(Thread):
                 previous_i = new_i
                 previous_j = new_j
 
-                pixel["state"] = Cts.STATE_BUSY
+                pixel["state"] += Cts.STATE_BUSY
                 pixel["client"] = client.id
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
@@ -305,10 +305,15 @@ class Game(Thread):
 
                 map_pixel = self.map.pixel(int(previous_i), int(previous_j))
 
+                # check if pixel is not a wall
                 if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
-                    map_pixel["state"] = Cts.STATE_EMPTY
-                    map_pixel["mob"] = Cts.STATE_EMPTY
-                    map_pixel["client"] = Cts.STATE_EMPTY
+                    # clear pixel after snake tail moved out
+                    if map_pixel["state"] != Cts.STATE_EMPTY:
+                        map_pixel["state"] -= Cts.STATE_BUSY
+                    if map_pixel["state"] == Cts.STATE_EMPTY:
+                        # if state count equals to STATE_EMPTY remove client id
+                        map_pixel["mob"] = Cts.STATE_EMPTY
+                        map_pixel["client"] = Cts.STATE_EMPTY
                     key = self.map.getKey(int(previous_i), int(previous_j))
                     if key in self.map.power_ups:
                         pu = self.map.power_ups[key]
