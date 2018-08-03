@@ -76,7 +76,12 @@ class Snake():
         self.pixels_str = self.snake_data_str + self.snake_body_str
 
     def getPixelsStr(self):
-        return self.pixels_str
+        self.snake_data_array[2] = chr(0)
+        self.snake_data_array[3] = chr(1)
+        str_temp = "".join(self.snake_data_array)
+        return "".join([str_temp, chr(int(self.pixels[0]["i"])), chr(int(self.pixels[0]["j"]))])
+        
+        #return self.pixels_str
 
     def increaseSize(self):
         if (self.size < Cts.MAX_SNAKE_SIZE):
