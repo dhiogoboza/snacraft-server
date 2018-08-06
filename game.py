@@ -149,9 +149,8 @@ class Game(Thread):
 
         for client in self.clients:
             # CLIENT_ID | SNAKE_COLOR | SNAKE_SIZE_MOST | SNAKE_SIZE_LESS | SNAKE_SPEED | PIXELS...
-            snk = client.snake
             # FIXME: cache this message in snake
-            snakes.append(snk.getPixelsStr())
+            snakes.append(client.snake.getPixelsStr())
 
         return "".join(snakes)
 
@@ -221,12 +220,16 @@ class Game(Thread):
         cur_time = 0
         count = 0
         sort_count = 0
-        messageSnakesChange = ""
-        messageMobsChange = ""
+        snakes_change_count = 0
+        message_snakes_change = None
+        message_mobs_change = None
         aux = 0
 
         while self.running:
             # randomize power ups items
+            snakes_change_count = 0
+            message_snakes_change = ""
+            message_mobs_change = ""
             if (count == 10):
                 index = 0
                 to_delete = []
@@ -237,7 +240,7 @@ class Game(Thread):
 
                         # power up changed
                         if aux != power_up["item"]:
-                            messageMobsChange += chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
+                            message_mobs_change += chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
                     if power_up["loop"]:
                         power_up["loop"] -= 1
@@ -246,7 +249,7 @@ class Game(Thread):
                             self.map.pixel(power_up["i"], power_up["j"])["mob"] = Cts.STATE_EMPTY
 
                             # update clients
-                            messageMobsChange += chr(power_up["i"]) + chr(power_up["j"]) + Cts.STATE_EMPTY_CHAR
+                            message_mobs_change += chr(power_up["i"]) + chr(power_up["j"]) + Cts.STATE_EMPTY_CHAR
 
                             to_delete.append(k)
                 for k in to_delete:
@@ -285,11 +288,11 @@ class Game(Thread):
                 pixel = self.map.pixel(int_new_i, int_new_j)
 
                 if pixel["state"] != Cts.STATE_EMPTY and pixel["client"] != client.id:
-                    messageMobsChange += self.kill(client)
+                    message_mobs_change += self.kill(client)
                     continue
 
                 if pixel["mob"] != Cts.STATE_EMPTY:
-                    messageMobsChange += self.processMob(client, pixel, int_new_i, int_new_j)
+                    message_mobs_change += self.processMob(client, pixel, int_new_i, int_new_j)
 
                 previous_i = new_i
                 previous_j = new_j
@@ -317,7 +320,7 @@ class Game(Thread):
                     key = self.map.getKey(int(previous_i), int(previous_j))
                     if key in self.map.power_ups:
                         pu = self.map.power_ups[key]
-                        messageMobsChange += self.map.generateRandomPowerUp(pu["type"], pu["item"])
+                        message_mobs_change += self.map.generateRandomPowerUp(pu["type"], pu["item"])
                         self.map.power_ups.pop(key)
                 snake.can_move = True
                 # clients iteration end
@@ -331,9 +334,7 @@ class Game(Thread):
             else:
                 sort_count += 1
 
-            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + messageMobsChange
-            messageSnakesChange = ""
-            messageMobsChange = ""
+            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + message_mobs_change
 
             for client in self.clients:
                 client.sendMessage(messageMobs, binary=True)
