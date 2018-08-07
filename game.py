@@ -102,7 +102,8 @@ class Game(Thread):
 
         # send clients list
         client.sendMessage(players_list, binary=True)
-        client.sendMessage(Cts.MESSAGE_MOBS + self.getSnakes() + self.map.getPowerUps(), binary=True)
+        client.sendMessage(Cts.MESSAGE_ALL_MOBS + self.getSnakes() + self.map.getPowerUps(), binary=True)
+        #client.sendMessage(Cts.MESSAGE_MOBS_CHANGES + self.map.getPowerUps(), binary=True)
 
     def broadcastClientExited(self, client):
         """
@@ -334,7 +335,7 @@ class Game(Thread):
             else:
                 sort_count += 1
 
-            messageMobs = Cts.MESSAGE_MOBS + self.getSnakes() + message_mobs_change
+            messageMobs = Cts.MESSAGE_MOBS_CHANGES + message_mobs_change #self.getSnakes() + message_mobs_change
 
             for client in self.clients:
                 client.sendMessage(messageMobs, binary=True)

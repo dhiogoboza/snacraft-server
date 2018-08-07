@@ -72,7 +72,7 @@ class Constants:
     # Messages types
     MESSAGE_MAP = chr(0)
     MESSAGE_CLIENT_DATA = chr(1)
-    MESSAGE_MOBS = chr(2)
+    MESSAGE_MOBS_CHANGES = chr(2)
     MESSAGE_DEATH = chr(4)
 
     """
@@ -100,6 +100,11 @@ class Constants:
     Player speed information message type
     """
     MESSAGE_PLAYER_SPEED = chr(11)
+
+    """
+    All map mobs
+    """
+    MESSAGE_ALL_MOBS = chr(12)
 
     @staticmethod
     def getKeyStr(key):
