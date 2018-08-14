@@ -18,7 +18,7 @@ class Game(Thread):
         self.running = True
         self.map = Map(lines, columns)
         self.clients = []
-        self.client_ids = range(1, Cts.MAX_PLAYERS - 1) # fifo of available client_ids
+        self.client_ids = range(1, Cts.MAX_PLAYERS - 2) # fifo of available client_ids
 
         random.seed()
         Thread.__init__(self)
@@ -221,16 +221,12 @@ class Game(Thread):
         cur_time = 0
         count = 0
         sort_count = 0
-        snakes_change_count = 0
-        message_snakes_change = None
         message_mobs_change = None
         aux = 0
 
         while self.running:
-            # randomize power ups items
-            snakes_change_count = 0
-            message_snakes_change = ""
             message_mobs_change = ""
+            # randomize power ups items
             if (count == 10):
                 index = 0
                 to_delete = []
@@ -303,6 +299,9 @@ class Game(Thread):
 
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
 
+                # new snake position
+                message_mobs_change += chr(int_new_i) + chr(int_new_j) + Cts.CHAR_SNAKE_HEAD_FLAG + chr(client.id)
+
                 if client.bot:
                     # head off bot from obstacles
                     self.bot_manager.moveBot(client)
@@ -318,6 +317,7 @@ class Game(Thread):
                         # if state count equals to STATE_EMPTY remove client id
                         map_pixel["mob"] = Cts.STATE_EMPTY
                         map_pixel["client"] = Cts.STATE_EMPTY
+                        message_mobs_change += chr(int(previous_i)) + chr(int(previous_j)) + Cts.STATE_EMPTY_CHAR
                     key = self.map.getKey(int(previous_i), int(previous_j))
                     if key in self.map.power_ups:
                         pu = self.map.power_ups[key]

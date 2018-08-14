@@ -25,15 +25,15 @@ class Snake():
 
         for c in range(i, i + size):
             self.pixels.append({
-                    "i": c,
+                    "i": i,
                     "j": j,
                     "c": color
                 })
 
-            map_pixel = game_matrix.pixel(c, j)
-            if map_pixel["state"] == Cts.STATE_EMPTY:
-                map_pixel["client"] = client_id
-                map_pixel["state"] = Cts.STATE_BUSY
+        map_pixel = game_matrix.pixel(i, j)
+        #if map_pixel["state"] == Cts.STATE_EMPTY:
+        map_pixel["client"] = client_id
+        map_pixel["state"] = Cts.STATE_BUSY
 
         self.updateSnakeDataStr()
         self.updateSnakeBodyStr()

@@ -16,8 +16,10 @@ class Constants:
     STATE_EMPTY = 0
     STATE_BUSY = 1
     MOB_INCREASE = 16
-
     STATE_EMPTY_CHAR = chr(STATE_EMPTY)
+
+    # Flags
+    CHAR_SNAKE_HEAD_FLAG = chr(255)
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
