@@ -297,10 +297,8 @@ class Game(Thread):
                 pixel["state"] += Cts.STATE_BUSY
                 pixel["client"] = client.id
 
+                # snake walk
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
-
-                # new snake position
-                message_mobs_change += chr(int_new_i) + chr(int_new_j) + Cts.CHAR_SNAKE_HEAD_FLAG + chr(client.id)
 
                 if client.bot:
                     # head off bot from obstacles
@@ -313,17 +311,22 @@ class Game(Thread):
                     # clear pixel after snake tail moved out
                     if map_pixel["state"] != Cts.STATE_EMPTY:
                         map_pixel["state"] -= Cts.STATE_BUSY
-                    if map_pixel["state"] == Cts.STATE_EMPTY:
+                    if map_pixel["state"] <= Cts.STATE_EMPTY:
                         # if state count equals to STATE_EMPTY remove client id
-                        map_pixel["mob"] = Cts.STATE_EMPTY
-                        map_pixel["client"] = Cts.STATE_EMPTY
+                        map_pixel["mob"] = map_pixel["client"] = map_pixel["state"] = Cts.STATE_EMPTY
                         message_mobs_change += chr(int(previous_i)) + chr(int(previous_j)) + Cts.STATE_EMPTY_CHAR
                     key = self.map.getKey(int(previous_i), int(previous_j))
                     if key in self.map.power_ups:
                         pu = self.map.power_ups[key]
                         message_mobs_change += self.map.generateRandomPowerUp(pu["type"], pu["item"])
                         self.map.power_ups.pop(key)
+
+                # send new snake head position
+                message_mobs_change += chr(int_new_i) + chr(int_new_j) + Cts.CHAR_SNAKE_HEAD_FLAG + chr(client.id)
+                
+                # snake can move flag to true
                 snake.can_move = True
+
                 # clients iteration end
 
             # FIXME: find a better way to do this
