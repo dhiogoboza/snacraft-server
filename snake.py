@@ -47,11 +47,14 @@ class Snake():
 
         return "".join(pixels_str)
 
-    def increaseSize(self):
+    def increaseSize(self, game_map):
         if (self.size < Cts.MAX_SNAKE_SIZE):
-            self.pixels.insert(0, self.pixels[0].copy())
+            new_pixel = self.pixels[self.size - 1].copy()
+            self.pixels.append(new_pixel)
             self.size = self.size + 1
             self.grew = True
+            # TODO: enable this?
+            #game_map.pixel(new_pixel["i"], new_pixel["j"])["state"] += Cts.STATE_BUSY
 
     def walk(self, previous_i, previous_j):
         self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
