@@ -120,10 +120,10 @@ class Game(Thread):
         power_ups_generated_message = ""
 
         for pixel in client.snake.pixels:
-            i, j = int(pixel['i']), int(pixel['j'])
+            i, j = int(pixel.i), int(pixel.j)
             map_pixel = self.map.pixel(i, j)
 
-            if map_pixel["state"] != Cts.STATE_EMPTY and not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
+            if map_pixel.isBusy() and (not map_pixel.it or map_pixel.it > Cts.MAX_OBSTACLE_TILE):
                 power_up = {}
                 power_up["i"] = i
                 power_up["j"] = j
@@ -133,9 +133,9 @@ class Game(Thread):
 
                 key = self.map.getKey(i, j)
                 self.map.animated_power_ups[key] = power_up
-                map_pixel["mob"] = power_up_type
-                map_pixel["state"] = Cts.STATE_EMPTY
-                map_pixel["client"] = Cts.STATE_EMPTY
+                map_pixel.mob = power_up_type
+                map_pixel.state = Cts.STATE_EMPTY
+                map_pixel.client = Cts.STATE_EMPTY
 
                 power_ups_generated_message += chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
 
@@ -163,19 +163,19 @@ class Game(Thread):
         key = self.map.getKey(i, j)
         power_up_generated_message = ""
 
-        if pixel["mob"] == Cts.MOB_INCREASE:
+        if pixel.mob == Cts.MOB_INCREASE:
             power_up = self.map.power_ups[key]
 
             snake.increaseSize(self.map)
             power_up_generated_message = self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
             self.map.power_ups.pop(key)
-        elif pixel["mob"] == Cts.MOB_CORPSE[0]:
+        elif pixel.mob == Cts.MOB_CORPSE[0]:
             power_up = self.map.animated_power_ups[key]
 
             snake.increaseSize(self.map)
             self.map.animated_power_ups.pop(key)
             # do not generate another
-        elif pixel["mob"] == Cts.MOB_MOVE_SPEED:
+        elif pixel.mob == Cts.MOB_MOVE_SPEED:
             power_up = self.map.power_ups[key]
 
             snake.speed = snake.speed + Cts.SPEED_INCREMENT
@@ -193,7 +193,7 @@ class Game(Thread):
             power_up_generated_message = self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
             self.map.power_ups.pop(key)
 
-        pixel["mob"] = Cts.STATE_EMPTY
+        pixel.mob = Cts.STATE_EMPTY
         client.sendMessage("".join([Cts.MESSAGE_SOUND, chr(power_up["item"])]), binary=True)
 
         return power_up_generated_message
@@ -214,7 +214,7 @@ class Game(Thread):
     def sendClientData(self, client):
         head = client.snake.getHead()
         client.sendMessage("".join([Cts.MESSAGE_CLIENT_DATA,
-                chr(client.id), chr(client.snake.color), chr(head["i"]), chr(head["j"])
+                chr(client.id), chr(client.snake.color), head.getIChar(), head.getJChar()
                 ]), binary=True)
 
     def run(self):
@@ -244,7 +244,7 @@ class Game(Thread):
                         power_up["loop"] -= 1
                         if not power_up["loop"]:
                             # remove corpse
-                            self.map.pixel(power_up["i"], power_up["j"])["mob"] = Cts.STATE_EMPTY
+                            self.map.pixel(power_up["i"], power_up["j"]).mob = Cts.STATE_EMPTY
 
                             # update clients
                             message_mobs_change += chr(power_up["i"]) + chr(power_up["j"]) + Cts.STATE_EMPTY_CHAR
@@ -264,16 +264,16 @@ class Game(Thread):
 
                 head = snake.getHead()
 
-                new_i = head["i"] + snake.di
-                new_j = head["j"] + snake.dj
+                new_i = head.i + snake.di
+                new_j = head.j + snake.dj
 
                 int_new_i = int(new_i)
                 int_new_j = int(new_j)
 
-                if int_new_i == int(head["i"]) and int_new_j == int(head["j"]):
+                if int_new_i == int(head.i) and int_new_j == int(head.j):
                     # snake do not moved
-                    head["i"] = new_i
-                    head["j"] = new_j
+                    head.i = new_i
+                    head.j = new_j
                     snake.moved = False
                     if client.bot:
                         # head off bot from obstacles
@@ -286,18 +286,18 @@ class Game(Thread):
                 # snake head
                 pixel = self.map.pixel(int_new_i, int_new_j)
 
-                if pixel["state"] != Cts.STATE_EMPTY and pixel["client"] != client.id:
+                if pixel.isBusy() and pixel.client != client.id:
                     message_mobs_change += self.kill(client)
                     continue
 
-                if pixel["mob"] != Cts.STATE_EMPTY:
+                if pixel.hasMob():
                     message_mobs_change += self.processMob(client, pixel, int_new_i, int_new_j)                    
 
                 previous_i = new_i
                 previous_j = new_j
 
-                pixel["state"] += Cts.STATE_BUSY
-                pixel["client"] = client.id
+                pixel.state += Cts.STATE_BUSY
+                pixel.client = client.id
 
                 # snake walk
                 previous_i, previous_j = snake.walk(previous_i, previous_j)
@@ -310,18 +310,18 @@ class Game(Thread):
                 map_pixel = self.map.pixel(int(previous_i), int(previous_j))
 
                 # check if pixel is not a wall
-                if not map_pixel["it"] or map_pixel["it"] > Cts.MAX_OBSTACLE_TILE:
+                if not map_pixel.it or map_pixel.it > Cts.MAX_OBSTACLE_TILE:
                     # clear pixel after snake tail moved out
-                    if map_pixel["state"] > Cts.STATE_EMPTY:
-                        map_pixel["state"] -= Cts.STATE_BUSY
+                    if map_pixel.state > Cts.STATE_EMPTY:
+                        map_pixel.state -= Cts.STATE_BUSY
 
-                    if map_pixel["state"] <= Cts.STATE_EMPTY:
+                    if map_pixel.state <= Cts.STATE_EMPTY:
                         # if state count equals to STATE_EMPTY remove client id
-                        map_pixel["mob"] = map_pixel["client"] = map_pixel["state"] = Cts.STATE_EMPTY
-                        message_mobs_change += chr(int(previous_i)) + chr(int(previous_j)) + Cts.STATE_EMPTY_CHAR
+                        map_pixel.mob = map_pixel.client = map_pixel.state = Cts.STATE_EMPTY
+                        message_mobs_change += map_pixel.getIChar() + map_pixel.getJChar() + Cts.STATE_EMPTY_CHAR
 
                 # send new snake head position
-                message_mobs_change += chr(int_new_i) + chr(int_new_j) + Cts.CHAR_SNAKE_HEAD_FLAG + chr(client.id)
+                message_mobs_change += pixel.getIChar() + pixel.getJChar() + Cts.CHAR_SNAKE_HEAD_FLAG + chr(client.id)
 
                 # snake can move flag to true
                 snake.can_move = True

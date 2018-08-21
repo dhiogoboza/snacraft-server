@@ -53,12 +53,13 @@ class Snake():
             #game_map.pixel(new_pixel["i"], new_pixel["j"])["state"] += Cts.STATE_BUSY
 
     def walk(self, previous_i, previous_j):
-        self.pixels[0]["i"], previous_i = previous_i, int(self.pixels[0]["i"])
-        self.pixels[0]["j"], previous_j = previous_j, int(self.pixels[0]["j"])
+        # int?
+        self.pixels[0].i, previous_i = previous_i, self.pixels[0].i
+        self.pixels[0].j, previous_j = previous_j, self.pixels[0].j
 
         for i in range(1, len(self.pixels)):
-            self.pixels[i]["i"], previous_i = previous_i, self.pixels[i]["i"]
-            self.pixels[i]["j"], previous_j = previous_j, self.pixels[i]["j"]
+            self.pixels[i].i, previous_i = previous_i, self.pixels[i].i
+            self.pixels[i].j, previous_j = previous_j, self.pixels[i].j
 
         return previous_i, previous_j
 
@@ -89,7 +90,7 @@ class Snake():
         if key == Cts.KEY_UP:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.pixels[0].j = int(self.pixels[0].j)
                 self.di = -self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_UP
@@ -98,7 +99,7 @@ class Snake():
         elif key == Cts.KEY_DOWN:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.pixels[0].j = int(self.pixels[0].j)
                 self.di = self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_DOWN
@@ -108,7 +109,7 @@ class Snake():
             if (self.dj == 0):
                 self.dj = -self.speed
                 self.di = 0
-                self.pixels[0]["i"] = int(self.pixels[0]["i"])
+                self.pixels[0].i = int(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_LEFT
 
@@ -117,6 +118,6 @@ class Snake():
             if (self.dj == 0):
                 self.dj = self.speed
                 self.di = 0
-                self.pixels[0]["i"] = int(self.pixels[0]["i"])
+                self.pixels[0].i = int(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_RIGHT
