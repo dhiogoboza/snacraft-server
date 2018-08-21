@@ -66,7 +66,7 @@ class Game(Thread):
             j = random.randint(offset, self.columns - offset)
             map_pixel = self.map.pixel(i, j)
 
-            if map_pixel["mob"] == Cts.STATE_EMPTY and map_pixel["state"] == Cts.STATE_EMPTY:
+            if map_pixel.withoutMob() and map_pixel.isEmpty():
                 break;
 
         if client.bot:

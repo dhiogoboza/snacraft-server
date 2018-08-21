@@ -1,5 +1,6 @@
 import random
 
+from pixel import MapPixel
 from constants import Constants as Cts
 
 class Map():
@@ -16,7 +17,7 @@ class Map():
         for i in range(0, self.lines):
             line = []
             for j in range(0, self.columns):
-                line.append({"it": Cts.STATE_EMPTY, "state": Cts.STATE_EMPTY, "mob": Cts.STATE_EMPTY, "client": 0})
+                line.append(MapPixel(i, j, Cts.STATE_EMPTY, Cts.STATE_EMPTY, Cts.STATE_EMPTY, 0))
             self.matrix.append(line)
 
         for i in range(0, 20):
@@ -36,12 +37,13 @@ class Map():
 
     def generateRandomPowerUp(self, power_up_type, item):
         power_up = {}
+        pixel = None
 
         while True:
             i = random.randrange(1, self.lines - 1)
             j = random.randrange(1, self.columns - 1)
-
-            if self.matrix[i][j]["mob"] == Cts.STATE_EMPTY and self.matrix[i][j]["state"] == Cts.STATE_EMPTY:
+            pixel = self.matrix[i][j]
+            if pixel.withoutMob() and pixel.isEmpty():
                 break;
 
         power_up["i"] = i
@@ -52,9 +54,9 @@ class Map():
         key = self.getKey(i, j)
 
         self.power_ups[key] = power_up
-        self.matrix[i][j]["mob"] = power_up_type
+        pixel.mob = power_up_type
 
-        return chr(power_up["i"]) + chr(power_up["j"]) + chr(power_up["item"])
+        return pixel.getIChar() + pixel.getJChar() + chr(power_up["item"])
             
     def drawIsland(self):
         start_i = random.randrange(5, (self.lines / 2) - 5)
@@ -86,8 +88,8 @@ class Map():
                 else:
                     it = random.randrange(Cts.CLAY[0], Cts.CLAY[1])
 
-                current["it"] = it
-                current["state"] = Cts.STATE_BUSY
+                current.it = it
+                current.state = Cts.STATE_BUSY
 
     def drawWalls(self):
         walls_width = Cts.WALLS_WIDTH
@@ -105,15 +107,15 @@ class Map():
                     it = Cts.STATE_EMPTY
 
                 current = self.matrix[i][j]
-                current["it"] = it if it != Cts.STATE_EMPTY else current["it"]
-                current["state"] = state if state != Cts.STATE_EMPTY else current["state"]
+                current.it = it if it != Cts.STATE_EMPTY else current.it
+                current.state = state if state != Cts.STATE_EMPTY else current.state
 
     def getMapStr(self):
         to_return = str(self.lines) + "," + str(self.columns)
 
         for i in range(0, self.lines):
             for j in range(0, self.columns):
-                to_return = to_return + "," + str(self.matrix[i][j]["it"])
+                to_return = to_return + "," + str(self.matrix[i][j].it)
 
         return to_return
 
@@ -133,11 +135,7 @@ class Map():
 
     def pixel(self, i, j):
         if (i >= self.lines or j >= self.columns or i < 0 or j < 0):
-            pix = {}
-            pix["state"] = Cts.STATE_BUSY
-            pix["mob"] = Cts.STATE_EMPTY
-            pix["client"] = Cts.STATE_EMPTY
-            pix["it"] = Cts.STATE_EMPTY
+            pix = MapPixel(i, j, Cts.STATE_BUSY, Cts.STATE_EMPTY, Cts.STATE_EMPTY, 0)
             return pix
 
         return self.matrix[i][j]

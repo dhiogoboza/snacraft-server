@@ -1,4 +1,5 @@
 from constants import Constants as Cts
+from pixel import Pixel
 from Queue import *
 
 class Snake():
@@ -20,21 +21,16 @@ class Snake():
         self.client_id = client_id
 
         for c in range(i, i + size):
-            self.pixels.append({
-                    "i": i,
-                    "j": j,
-                    "c": color
-                })
+            self.pixels.append(Pixel(i, j, color))
 
         map_pixel = game_matrix.pixel(i, j)
-        #if map_pixel["state"] == Cts.STATE_EMPTY:
-        map_pixel["client"] = client_id
-        map_pixel["state"] = Cts.STATE_BUSY
+        map_pixel.client = client_id
+        map_pixel.state = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            pix = game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))
-            pix["state"] = pix["client"] = Cts.STATE_EMPTY
+            pix = game_matrix.pixel(int(pixel.i), int(pixel.j))
+            pix.state = pix.client = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False
@@ -42,8 +38,8 @@ class Snake():
     def getPixelsStr(self):
         pixels_str = [chr(self.client_id), chr(self.color), chr(self.size >> 8), chr(self.size & 0xFF)]
         for pixel in self.pixels:
-            pixels_str.append(chr(int(pixel["i"])))
-            pixels_str.append(chr(int(pixel["j"])))
+            pixels_str.append(pixel.getIChar())
+            pixels_str.append(pixel.getJChar())
 
         return "".join(pixels_str)
 
