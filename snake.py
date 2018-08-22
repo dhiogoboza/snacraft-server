@@ -1,3 +1,5 @@
+import utils
+
 from constants import Constants as Cts
 from pixel import Pixel
 from Queue import *
@@ -29,7 +31,7 @@ class Snake():
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            pix = game_matrix.pixel(int(pixel.i), int(pixel.j))
+            pix = game_matrix.pixel(utils.toint(pixel.i), utils.toint(pixel.j))
             pix.state = pix.client = Cts.STATE_EMPTY
 
     def kill(self):
@@ -52,8 +54,16 @@ class Snake():
             # TODO: enable this?
             #game_map.pixel(new_pixel["i"], new_pixel["j"])["state"] += Cts.STATE_BUSY
 
+    def incrementSpeed(self):
+        aux = self.speed
+        self.speed = self.speed + Cts.SPEED_INCREMENT
+        # FIXME: not sending speed message when max speed is reached
+        if self.speed > 1:
+            self.speed = 1
+
+        return self.speed != aux
+
     def walk(self, previous_i, previous_j):
-        # int?
         self.pixels[0].i, previous_i = previous_i, self.pixels[0].i
         self.pixels[0].j, previous_j = previous_j, self.pixels[0].j
 
@@ -90,7 +100,7 @@ class Snake():
         if key == Cts.KEY_UP:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0].j = int(self.pixels[0].j)
+                self.pixels[0].j = utils.toint(self.pixels[0].j)
                 self.di = -self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_UP
@@ -99,7 +109,7 @@ class Snake():
         elif key == Cts.KEY_DOWN:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0].j = int(self.pixels[0].j)
+                self.pixels[0].j = utils.toint(self.pixels[0].j)
                 self.di = self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_DOWN
@@ -109,7 +119,7 @@ class Snake():
             if (self.dj == 0):
                 self.dj = -self.speed
                 self.di = 0
-                self.pixels[0].i = int(self.pixels[0].i)
+                self.pixels[0].i = utils.toint(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_LEFT
 
@@ -118,6 +128,6 @@ class Snake():
             if (self.dj == 0):
                 self.dj = self.speed
                 self.di = 0
-                self.pixels[0].i = int(self.pixels[0].i)
+                self.pixels[0].i = utils.toint(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_RIGHT

@@ -1,5 +1,6 @@
 import random
 import time
+import utils
 
 from client import Client
 from constants import Constants as Cts
@@ -73,14 +74,14 @@ class BotManager(Thread):
         snake = bot.snake
         head = snake.getHead()
 
-        cur_i = int(head.i)
-        cur_j = int(head.j)
+        cur_i = utils.toint(head.i)
+        cur_j = utils.toint(head.j)
 
         new_i = head.i + snake.di
         new_j = head.j + snake.dj
 
-        int_new_i = int(new_i)
-        int_new_j = int(new_j)
+        int_new_i = utils.toint(new_i)
+        int_new_j = utils.toint(new_j)
 
         if int_new_i == cur_i and int_new_j == cur_j:
             # same position
@@ -127,8 +128,8 @@ class BotManager(Thread):
                 if random.randint(0, 100) < Cts.PROBABILITY_BOT_MOVE:
                     snake = bot.snake
                     head = snake.getHead()
-                    cur_i = int(head.i)
-                    cur_j = int(head.j)
+                    cur_i = utils.toint(head.i)
+                    cur_j = utils.toint(head.j)
 
                     # Use keys instead of directions
                     movement = random.randint(Cts.DIRECTION_UP, Cts.DIRECTION_RIGHT)

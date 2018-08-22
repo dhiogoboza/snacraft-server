@@ -1,4 +1,5 @@
 import random
+import utils
 
 from pixel import MapPixel
 from constants import Constants as Cts
@@ -25,14 +26,14 @@ class Map():
 
         self.drawWalls()
 
-        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.2)
+        minor = utils.toint((self.lines if self.lines < self.columns else self.columns) * 0.2)
 
         for c in range(0, minor):
             for item in range(Cts.MOB_FOOD_ITEMS[0], Cts.MOB_FOOD_ITEMS[1]):
                 self.generateRandomPowerUp(Cts.MOB_INCREASE, item)
 
-        minor = int((self.lines if self.lines < self.columns else self.columns) * 0.5)
-        for c in range(0, int(minor * 0.2)):
+        minor = utils.toint((self.lines if self.lines < self.columns else self.columns) * 0.5)
+        for c in range(0, utils.toint(minor * 0.2)):
             self.generateRandomPowerUp(Cts.MOB_MOVE_SPEED, Cts.MOB_MOVE_SPEED)
 
     def generateRandomPowerUp(self, power_up_type, item):

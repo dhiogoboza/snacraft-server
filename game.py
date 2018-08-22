@@ -1,5 +1,6 @@
 import random
 import time
+import utils
 
 from map import Map
 from snake import Snake
@@ -80,7 +81,7 @@ class Game(Thread):
         # notify speed
         client.sendMessage("".join([
             Cts.MESSAGE_PLAYER_SPEED,
-            chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+            chr(0)]),
             binary=True)
 
     def sendAllPlayers(self, client):
@@ -120,7 +121,7 @@ class Game(Thread):
         power_ups_generated_message = ""
 
         for pixel in client.snake.pixels:
-            i, j = int(pixel.i), int(pixel.j)
+            i, j = utils.toint(pixel.i), utils.toint(pixel.j)
             map_pixel = self.map.pixel(i, j)
 
             if map_pixel.isBusy() and (not map_pixel.it or map_pixel.it > Cts.MAX_OBSTACLE_TILE):
@@ -177,19 +178,12 @@ class Game(Thread):
             # do not generate another
         elif pixel.mob == Cts.MOB_MOVE_SPEED:
             power_up = self.map.power_ups[key]
-
-            snake.speed = snake.speed + Cts.SPEED_INCREMENT
-
-            # FIXME: not sending speed message when max speed is reached
-            if snake.speed > 1:
-                snake.speed = 1
-            else:
+            if snake.incrementSpeed():
                 # notify speed boost
                 client.sendMessage("".join([
                     Cts.MESSAGE_PLAYER_SPEED,
-                    chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+                    chr(int(round((snake.speed - Cts.INITIAL_SPEED) * 10.00)))]),
                     binary=True)
-
             power_up_generated_message = self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
             self.map.power_ups.pop(key)
 
@@ -267,10 +261,10 @@ class Game(Thread):
                 new_i = head.i + snake.di
                 new_j = head.j + snake.dj
 
-                int_new_i = int(new_i)
-                int_new_j = int(new_j)
+                int_new_i = utils.toint(new_i)
+                int_new_j = utils.toint(new_j)
 
-                if int_new_i == int(head.i) and int_new_j == int(head.j):
+                if int_new_i == utils.toint(head.i) and int_new_j == utils.toint(head.j):
                     # snake do not moved
                     head.i = new_i
                     head.j = new_j
@@ -307,7 +301,7 @@ class Game(Thread):
                     self.bot_manager.moveBot(client)
 
                 # snake tail
-                map_pixel = self.map.pixel(int(previous_i), int(previous_j))
+                map_pixel = self.map.pixel(utils.toint(previous_i), utils.toint(previous_j))
 
                 # check if pixel is not a wall
                 if not map_pixel.it or map_pixel.it > Cts.MAX_OBSTACLE_TILE:
