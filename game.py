@@ -250,11 +250,22 @@ class Game(Thread):
             else:
                 count = count + 1
 
+            # leaderboard message
+            if sort_count == 0:
+                message_ranking = Cts.MESSAGE_LEADERBOARD
+            leaderboard_size = 0
             for client in self.clients:
                 snake = client.snake
 
                 if not snake.live:
                     continue
+
+                if not client.monster:
+                    if sort_count == Cts.STEPS_TO_SORT:
+                        client.sendMessage(message_ranking, binary=True)
+                    elif sort_count == 0 and leaderboard_size < Cts.LEADERBOARD_SIZE:
+                        message_ranking += chr(client.id)
+                        leaderboard_size += 1
 
                 head = snake.getHead()
 
@@ -323,7 +334,7 @@ class Game(Thread):
                 # clients iteration end
 
             # FIXME: find a better way to do this
-            if sort_count == 10:
+            if sort_count == Cts.STEPS_TO_SORT:
                 sort_count = 0
 
                 # sort clients

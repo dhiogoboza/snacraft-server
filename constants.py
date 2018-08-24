@@ -48,6 +48,10 @@ class Constants:
     KEY_LEFT = "2"
     KEY_RIGHT = "3"
 
+    # Leaderboard
+    STEPS_TO_SORT = 50
+    LEADERBOARD_SIZE = 10
+
     # Directions
     DIRECTION_UP = 0
     DIRECTION_DOWN = 1
@@ -107,6 +111,11 @@ class Constants:
     All map mobs
     """
     MESSAGE_ALL_MOBS = chr(12)
+
+    """
+    Players leaderboard
+    """
+    MESSAGE_LEADERBOARD = chr(13)
 
     @staticmethod
     def getKeyStr(key):
