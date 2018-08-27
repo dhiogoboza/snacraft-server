@@ -16,8 +16,10 @@ class Constants:
     STATE_EMPTY = 0
     STATE_BUSY = 1
     MOB_INCREASE = 16
-
     STATE_EMPTY_CHAR = chr(STATE_EMPTY)
+
+    # Flags
+    CHAR_SNAKE_HEAD_FLAG = chr(255)
 
     # Bots
     PROBABILITY_BOT_MOVE = 80
@@ -46,6 +48,10 @@ class Constants:
     KEY_LEFT = "2"
     KEY_RIGHT = "3"
 
+    # Leaderboard
+    STEPS_TO_SORT = 50
+    LEADERBOARD_SIZE = 10
+
     # Directions
     DIRECTION_UP = 0
     DIRECTION_DOWN = 1
@@ -72,7 +78,7 @@ class Constants:
     # Messages types
     MESSAGE_MAP = chr(0)
     MESSAGE_CLIENT_DATA = chr(1)
-    MESSAGE_MOBS = chr(2)
+    MESSAGE_MOBS_CHANGES = chr(2)
     MESSAGE_DEATH = chr(4)
 
     """
@@ -100,6 +106,16 @@ class Constants:
     Player speed information message type
     """
     MESSAGE_PLAYER_SPEED = chr(11)
+
+    """
+    All map mobs
+    """
+    MESSAGE_ALL_MOBS = chr(12)
+
+    """
+    Players leaderboard
+    """
+    MESSAGE_LEADERBOARD = chr(13)
 
     @staticmethod
     def getKeyStr(key):
