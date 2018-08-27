@@ -1,4 +1,7 @@
+import utils
+
 from constants import Constants as Cts
+from pixel import Pixel
 from Queue import *
 
 class Snake():
@@ -17,102 +20,56 @@ class Snake():
         self.keys_buffer = Queue()
         self.last_key = Cts.KEY_UP
         self.moved = False
-        self.pixels_str = ""
-        self.snake_data_str = ""
-        self.snake_body_str = ""
-        self.snake_data_array = [chr(client_id), chr(self.color), 0, 0]
-        self.snake_body_arr = []
+        self.client_id = client_id
 
         for c in range(i, i + size):
-            self.pixels.append({
-                    "i": c,
-                    "j": j,
-                    "c": color
-                })
+            self.pixels.append(Pixel(i, j, color))
 
-            map_pixel = game_matrix.pixel(c, j)
-            if map_pixel["state"] == Cts.STATE_EMPTY:
-                map_pixel["client"] = client_id
-                map_pixel["state"] = Cts.STATE_BUSY
-
-        self.updateSnakeDataStr()
-        self.updateSnakeBodyStr()
+        map_pixel = game_matrix.pixel(i, j)
+        map_pixel.client = client_id
+        map_pixel.state = Cts.STATE_BUSY
 
     def clear(self, game_matrix):
         for pixel in self.pixels:
-            pix = game_matrix.pixel(int(pixel["i"]), int(pixel["j"]))
-            pix["state"] = pix["client"] = Cts.STATE_EMPTY
+            pix = game_matrix.pixel(utils.toint(pixel.i), utils.toint(pixel.j))
+            pix.state = pix.client = Cts.STATE_EMPTY
 
     def kill(self):
         self.live = False
 
-    def updateSnakeDataStr(self):
-        self.snake_data_array[2] = chr(self.size >> 8)
-        self.snake_data_array[3] = chr(self.size & 0xFF)
-
-        self.snake_data_str = "".join(self.snake_data_array)
-
-        self.updateSnakeStr()
-
-    def updateSnakeBodyStr(self, np=None):
-        if np:
-            # only append new item in array
-            self.snake_body_arr.append(chr(int(np["i"])))
-            self.snake_body_arr.append(chr(int(np["j"])))
-        else:
-            # init all array
-            self.snake_body_arr = []
-
-            # append body pixels
-            for pixel in self.pixels:
-                self.snake_body_arr.append(chr(int(pixel["i"])))
-                self.snake_body_arr.append(chr(int(pixel["j"])))
-
-        self.snake_body_str = "".join(self.snake_body_arr)
-        self.updateSnakeStr()
-
-    def updateSnakeStr(self):
-        # join snake data and body
-        self.pixels_str = self.snake_data_str + self.snake_body_str
-
     def getPixelsStr(self):
-        return self.pixels_str
+        pixels_str = [chr(self.client_id), chr(self.color), chr(self.size >> 8), chr(self.size & 0xFF)]
+        for pixel in self.pixels:
+            pixels_str.append(pixel.getIChar())
+            pixels_str.append(pixel.getJChar())
 
-    def increaseSize(self):
+        return "".join(pixels_str)
+
+    def increaseSize(self, game_map):
         if (self.size < Cts.MAX_SNAKE_SIZE):
-            new_pixel = self.pixels[0].copy()
-            self.pixels.insert(0, new_pixel)
+            new_pixel = self.pixels[self.size - 1].copy()
+            self.pixels.append(new_pixel)
             self.size = self.size + 1
             self.grew = True
+            # TODO: enable this?
+            #game_map.pixel(new_pixel["i"], new_pixel["j"])["state"] += Cts.STATE_BUSY
 
-            self.updateSnakeBodyStr(np=new_pixel)
-            self.updateSnakeDataStr()
+    def incrementSpeed(self):
+        aux = self.speed
+        self.speed = self.speed + Cts.SPEED_INCREMENT
+        # FIXME: not sending speed message when max speed is reached
+        if self.speed > 1:
+            self.speed = 1
+
+        return self.speed != aux
 
     def walk(self, previous_i, previous_j):
-        curr_pixel = self.pixels[0]
-        curr_pixel["i"], previous_i = previous_i, int(curr_pixel["i"])
-        curr_pixel["j"], previous_j = previous_j, int(curr_pixel["j"])
-
-        c = 0
-        self.snake_body_arr[c] = chr(int(curr_pixel["i"]))
-        c+=1
-        self.snake_body_arr[c] = chr(int(curr_pixel["j"]))
-        c+=1
+        self.pixels[0].i, previous_i = previous_i, self.pixels[0].i
+        self.pixels[0].j, previous_j = previous_j, self.pixels[0].j
 
         for i in range(1, len(self.pixels)):
-            curr_pixel = self.pixels[i]
-
-            curr_pixel["i"], previous_i = previous_i, curr_pixel["i"]
-            curr_pixel["j"], previous_j = previous_j, curr_pixel["j"]
-
-            self.snake_body_arr[c] = chr(int(curr_pixel["i"]))
-            c+=1
-            self.snake_body_arr[c] = chr(int(curr_pixel["j"]))
-            c+=1
-
-        # update snake str
-        self.snake_body_str = "".join(self.snake_body_arr)
-        self.updateSnakeStr()
+            self.pixels[i].i, previous_i = previous_i, self.pixels[i].i
+            self.pixels[i].j, previous_j = previous_j, self.pixels[i].j
 
         return previous_i, previous_j
 
@@ -143,7 +100,7 @@ class Snake():
         if key == Cts.KEY_UP:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.pixels[0].j = utils.toint(self.pixels[0].j)
                 self.di = -self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_UP
@@ -152,7 +109,7 @@ class Snake():
         elif key == Cts.KEY_DOWN:
             if (self.di == 0):
                 self.dj = 0
-                self.pixels[0]["j"] = int(self.pixels[0]["j"])
+                self.pixels[0].j = utils.toint(self.pixels[0].j)
                 self.di = self.speed
                 self.can_move = False
                 self.direction = Cts.DIRECTION_DOWN
@@ -162,7 +119,7 @@ class Snake():
             if (self.dj == 0):
                 self.dj = -self.speed
                 self.di = 0
-                self.pixels[0]["i"] = int(self.pixels[0]["i"])
+                self.pixels[0].i = utils.toint(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_LEFT
 
@@ -171,6 +128,6 @@ class Snake():
             if (self.dj == 0):
                 self.dj = self.speed
                 self.di = 0
-                self.pixels[0]["i"] = int(self.pixels[0]["i"])
+                self.pixels[0].i = utils.toint(self.pixels[0].i)
                 self.can_move = False
                 self.direction = Cts.DIRECTION_RIGHT
