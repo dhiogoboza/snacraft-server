@@ -1,4 +1,4 @@
-<img src="/pictures/logo.png?raw=true" align="right" title="Snacraft Logo" width="120">
+<img src="/pictures/icon.png?raw=true" align="right" title="Snacraft Logo" width="120">
 
 # Snacraft Server
 [![License: MIT](https://img.shields.io/badge/license-Apache%202-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dhiogoboza/snacraft-server/issues)
