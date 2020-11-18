@@ -3,7 +3,7 @@
 # Snacraft Server
 [![License: MIT](https://img.shields.io/badge/license-Apache%202-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dhiogoboza/snacraft-server/issues)
 
-This project is the server side source from Snacraft game. This game is a classical snake multiplayer game. It is available in the [web](http://classic-snakeio.appspot.com/) and [Google Play](https://play.google.com/store/apps/details?id=io.snacraft.game).
+This project is the server side source from Snacraft game. This game is a classical snake multiplayer game. It is available in the [web](http://snacraft.appspot.com/) and [Google Play](https://play.google.com/store/apps/details?id=io.snacraft.game).
 
 ## Dependencies
 
