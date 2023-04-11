@@ -80,7 +80,7 @@ class Game(Thread):
         # notify speed
         client.sendMessage("".join([
             Cts.MESSAGE_PLAYER_SPEED,
-            chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+            chr(int(round((snake.speed - Cts.INITIAL_SPEED) / Cts.SPEED_INCREMENT)))]),
             binary=True)
 
     def sendAllPlayers(self, client):
@@ -177,16 +177,18 @@ class Game(Thread):
             # do not generate another
         elif pixel["mob"] == Cts.MOB_MOVE_SPEED:
             power_up = self.map.power_ups[key]
+            previous_speed = snake.speed
 
             snake.speed = snake.speed + Cts.SPEED_INCREMENT
 
             if snake.speed > 1:
                 snake.speed = 1
-            else:
+
+            if previous_speed != snake.speed:
                 # notify speed boost
                 client.sendMessage("".join([
                     Cts.MESSAGE_PLAYER_SPEED,
-                    chr(int((snake.speed - 0.5) * (10 - 1) / (1.0 - 0.5) + 1))]),
+                    chr(int(round((snake.speed - Cts.INITIAL_SPEED) / Cts.SPEED_INCREMENT)))]),
                     binary=True)
 
             power_up_generated_message = self.map.generateRandomPowerUp(power_up["type"], power_up["item"])
