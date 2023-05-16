@@ -1,6 +1,4 @@
-from constants import Constants as Cts
-from Queue import *
-from snake import Snake
+from .snake import Snake
 
 class SnakeBot(Snake):
 

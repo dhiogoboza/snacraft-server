@@ -1,5 +1,5 @@
-from constants import Constants as Cts
-from Queue import *
+from .constants import Constants as Cts
+import queue
 
 class Snake():
 
@@ -14,7 +14,7 @@ class Snake():
         self.size = size
         self.grew = True # initially grew from nothing to something ;)
         self.color = color
-        self.keys_buffer = Queue()
+        self.keys_buffer = queue.Queue()
         self.last_key = Cts.KEY_UP
         self.moved = False
         self.pixels_str = ""

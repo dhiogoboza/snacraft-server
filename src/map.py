@@ -1,6 +1,6 @@
 import random
 
-from constants import Constants as Cts
+from .constants import Constants as Cts
 
 class Map():
 
@@ -75,8 +75,8 @@ class Map():
         end_i = start_i + size
         end_j = start_j + size
 
-        for i in range(start_i, end_i):
-            for j in range(start_j, end_j):
+        for i in range(int(start_i), int(end_i)):
+            for j in range(int(start_j), int(end_j)):
                 if (len(self.matrix) <= i or len(self.matrix[i]) <= j):
                     continue;
                 current = self.matrix[i][j]

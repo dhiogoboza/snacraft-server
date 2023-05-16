@@ -14,7 +14,7 @@ sudo apt install gunicorn
 
 To solve python dependencies use this option if you want run in an virtual environment with `pipenv`:
 ```
-pipenv --two shell
+pipenv --python 2 shell
 ```
 
 It is also possible to install dependencies in your system:
@@ -24,11 +24,13 @@ pip install -r requirements.txt
 
 ## Running
 
-To run in development mode type:
+### Using google-cloud-sdk
 
 ```
-gunicorn -k flask_sockets.worker main:app
+dev_appserver.py dev-app.yaml --admin_port 9091
 ```
+
+This command starts development server at [localhost:8080](localhost:8080).
 
 ## Pictures
 

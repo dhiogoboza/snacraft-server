@@ -1,1 +1,1 @@
-gunicorn -b :8080 -k flask_sockets.worker main:app
+dev_appserver.py dev-app.yaml --admin_port 9091

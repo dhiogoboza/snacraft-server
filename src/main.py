@@ -1,15 +1,14 @@
+#-*- coding: utf-8 -*-
 import os
-import sys
-from game import Game
-from client import Client
-from botmanager import BotManager
-from constants import Constants as Cts
+from .game import Game
+from .client import Client
+from .botmanager import BotManager
+from .constants import Constants as Cts
 
+# [START gae_flex_websockets_app]
 from flask import Flask, render_template
 from flask_sockets import Sockets
-
-reload(sys)
-sys.setdefaultencoding('utf8')
+from werkzeug.routing import Rule
 
 game = Game(Cts.LINES, Cts.COLUMNS, Cts.SLEEP_TIME)
 bot_manager = BotManager(game, Cts.MAX_BOTS, Cts.SLEEP_TIME * 5)
@@ -27,7 +26,7 @@ app.debug = 'DEBUG' in os.environ
 # init websocket
 sockets = Sockets(app)
 
-@sockets.route('/')
+@sockets.route('/ws')
 def handle(ws):
     # new client connected
     client = Client(ws)
@@ -71,3 +70,10 @@ def handle(ws):
     game.removeClient(client)
 
     print(nickname, "disconnected")
+# [END gae_flex_websockets_app]
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+sockets.url_map.add(Rule('/ws', endpoint=handle, websocket=True))

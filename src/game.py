@@ -1,12 +1,12 @@
 import random
 import time
 
-from map import Map
-from snake import Snake
-from snakebot import SnakeBot
-from client import Client
+from .map import Map
+from .snake import Snake
+from .snakebot import SnakeBot
+from .constants import Constants as Cts
 from threading import Thread
-from constants import Constants as Cts
+import queue
 
 class Game(Thread):
 
@@ -18,7 +18,10 @@ class Game(Thread):
         self.running = True
         self.map = Map(lines, columns)
         self.clients = []
-        self.client_ids = range(1, Cts.MAX_PLAYERS - 1) # fifo of available client_ids
+        self.client_ids = queue.Queue(Cts.MAX_PLAYERS) # fifo of available client_ids
+
+        for id in range(1, Cts.MAX_PLAYERS - 1):
+            self.client_ids.put(id)
 
         random.seed()
         Thread.__init__(self)
@@ -34,12 +37,12 @@ class Game(Thread):
         if color < Cts.SNAKE_COLOR:
             color = Cts.SNAKE_COLOR
 
-        if (len(self.clients) > (Cts.MAX_PLAYERS - 1) or len(self.client_ids) == 0):
+        if (len(self.clients) > (Cts.MAX_PLAYERS - 1) or self.client_ids.qsize() == 0):
             # server is full
             client.close()
             return
 
-        client.setId(self.client_ids.pop(0))
+        client.setId(self.client_ids.get())
         self.createSnake(client, color)
 
     def removeClient(self, client):
@@ -53,7 +56,7 @@ class Game(Thread):
         self.releaseClientId(client.id)
 
     def releaseClientId(self, client_id):
-        self.client_ids.append(client_id)
+        self.client_ids.put(client_id)
 
     def getMap(self):
         return self.map

@@ -1,10 +1,8 @@
 import random
 import time
-
-from client import Client
-from constants import Constants as Cts
-
 from threading import Thread
+from .client import Client
+from .constants import Constants as Cts
 
 class BotManager(Thread):
     """

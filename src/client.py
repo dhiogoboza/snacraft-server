@@ -28,7 +28,7 @@ class Client():
             return
 
         if not self.ws.closed:
-            self.ws.send(message, binary=binary)
+            self.ws.send(bytes(message, 'latin1'), binary=True)
 
     def close(self):
         if self.bot:
